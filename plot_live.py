@@ -34,6 +34,6 @@ def plot_data(x_data,y_data):
     while plt.fignum_exists(fig.number):
         time.sleep(0.1)
 
-
+#hello
 
 
