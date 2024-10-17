@@ -82,30 +82,30 @@ def extract_windowed_features_single(emg_signal, window_size, fs):
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    data = pd.read_csv(r'C:\Users\User\Desktop\Record.csv')
-    print(data.columns)
+    data = pd.read_csv('recorded_data.csv')
+    print(data.head())
     # Extract EMG, Gyroscope, and Accelerometer signals
-    emg_signals = data[['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8']].values
-    gy_signals = data[['GyX', 'GyY', 'GyZ']].values
-    acc_signals = data[['AccX', 'AccY', 'AccZ']].values
+    emg_signals = data[[f'EMG_{i}' for i in range(8)]].values
+    gy_signals = data[['Gyro_X', 'Gyro_Y', 'Gyro_Z']].values
+    acc_signals = data[['Acc_X', 'Acc_Y', 'Acc_Z']].values
 
     emg_titles = [f'EMG Channel {i + 1}' for i in range(emg_signals.shape[1])]
-    gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
+    """gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
     acc_titles = [f'Accelerometer Channel {i + 1}' for i in range(acc_signals.shape[1])]
-    vbat = data['Vbat'].values
+    vbat = data['Vbat'].value
 
     mean_emg_signal = np.mean(emg_signals, axis=1)
     mean_gy_signal = np.mean(gy_signals, axis=1)
     mean_acc_signal = np.mean(acc_signals, axis=1)
 
     mean_signals = np.column_stack((mean_emg_signal, mean_gy_signal, mean_acc_signal))
-    mean_titles = ['Mean EMG Signal', 'Mean Gyroscope Signal', 'Mean Accelerometer Signal']
+    mean_titles = ['Mean EMG Signal', 'Mean Gyroscope Signal', 'Mean Accelerometer Signal']"""
 
 
     #Plot entire EMG signals
     plot_signals(emg_signals, fs, emg_titles)
 
-    # Plot entire Gyroscope signals
+    """# Plot entire Gyroscope signals
     plot_signals(gy_signals, fs, gy_titles)
 
     # Plot entire Accelerometer signals
@@ -125,4 +125,4 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm')
     plt.title('Feature Correlation Matrix')
-    plt.show()
+    plt.show()"""
