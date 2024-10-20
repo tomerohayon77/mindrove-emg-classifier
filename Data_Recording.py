@@ -31,10 +31,9 @@ def record_data(duration=60, filename='recorded_data.csv'):
             start_time = time.time()
             count = 1
             while time.time() - start_time < duration:
-                data = board_shim.get_current_board_data(num_points)
-                if data.shape[1] < num_points:
-                    num_points = data.shape[1]
-                for i in range(num_points):
+                data = board_shim.get_board_data()  # Get all available data since the last call
+                num_samples = data.shape[1]
+                for i in range(num_samples):
                     row = [count] + \
                           [data[channel][i] for channel in emg_channels] + \
                           [data[channel][i] for channel in accel_channels] + \
@@ -51,4 +50,4 @@ def record_data(duration=60, filename='recorded_data.csv'):
             board_shim.release_session()
 
 if __name__ == '__main__':
-    record_data(duration=60, filename='recorded_data.csv')
+    record_data(duration=20, filename='recorded_data.csv')

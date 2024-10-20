@@ -90,22 +90,22 @@ if __name__ == "__main__":
     acc_signals = data[['Acc_X', 'Acc_Y', 'Acc_Z']].values
 
     emg_titles = [f'EMG Channel {i + 1}' for i in range(emg_signals.shape[1])]
-    """gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
+    gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
     acc_titles = [f'Accelerometer Channel {i + 1}' for i in range(acc_signals.shape[1])]
-    vbat = data['Vbat'].value
+    vbat = data['VBAT'].values
 
     mean_emg_signal = np.mean(emg_signals, axis=1)
     mean_gy_signal = np.mean(gy_signals, axis=1)
     mean_acc_signal = np.mean(acc_signals, axis=1)
 
     mean_signals = np.column_stack((mean_emg_signal, mean_gy_signal, mean_acc_signal))
-    mean_titles = ['Mean EMG Signal', 'Mean Gyroscope Signal', 'Mean Accelerometer Signal']"""
+    mean_titles = ['Mean EMG Signal', 'Mean Gyroscope Signal', 'Mean Accelerometer Signal']
 
 
     #Plot entire EMG signals
     plot_signals(emg_signals, fs, emg_titles)
 
-    """# Plot entire Gyroscope signals
+# Plot entire Gyroscope signals
     plot_signals(gy_signals, fs, gy_titles)
 
     # Plot entire Accelerometer signals
@@ -125,4 +125,4 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm')
     plt.title('Feature Correlation Matrix')
-    plt.show()"""
+    plt.show()
