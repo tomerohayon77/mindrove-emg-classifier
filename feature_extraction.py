@@ -1,6 +1,16 @@
 import numpy as np
 from scipy.fftpack import fft
+"""
+List of all thee featues and their meanings:
+MAV: Mean Absolute Value
+RMS: Root Mean Square
+WL: Waveform Length
+ZC: Zero Crossing
+SSC: Slope Sign Changes
+MNF: Mean Frequency
+MDF: Median Frequency
 
+"""
 # Time-Domain Features
 def mav_feature(emg_signal):
     """Mean Absolute Value (MAV)"""

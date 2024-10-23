@@ -32,21 +32,7 @@ def apply_filters(emg_signals, fs):
     for i in range(emg_signals.shape[1]):
         filtered_signal = highpass_filter(filtered_emg_signals[:, i], cutoff=20, fs=fs)
         filtered_signal = notch_filter(filtered_signal, notch_freq=50, fs=fs)  # For 50 Hz powerline noise
-        filtered_signal = lowpass_filter(filtered_signal, cutoff=fs/2, fs=fs)  # Adjusted cutoff frequency
+        filtered_signal = lowpass_filter(filtered_signal, cutoff=fs/2-1, fs=fs)  # Adjusted cutoff frequency
+        #filtered_signal = lowpass_filter(filtered_signal, cutoff=150 , fs=fs)  # Adjusted cutoff frequency
         filtered_emg_signals[:, i] = filtered_signal
     return filtered_emg_signals
-
-#The mindrove filters
-def their_filter(emg_signals, fs):
-    # Apply filters to EMG signals
-    filtered_emg  = emg_signals.copy()
-    for channel in range(emg_signals.shape[1]):
-        # plot timeseries
-        DataFilter.detrend(filtered_emg[channel], DetrendOperations.CONSTANT.value)
-        DataFilter.perform_bandpass(filtered_emg[channel], fs, 51.0, 100.0, 2,
-                                    FilterTypes.BUTTERWORTH.value, 0)
-        DataFilter.perform_bandpass(filtered_emg[channel], fs, 51.0, 100.0, 2,
-                                    FilterTypes.BUTTERWORTH.value, 0)
-        DataFilter.perform_bandstop(filtered_emg[channel], fs, 50.0, 4.0, 2,
-                                    FilterTypes.BUTTERWORTH.value, 0)
-    return filtered_emg
