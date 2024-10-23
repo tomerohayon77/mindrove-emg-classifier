@@ -1,6 +1,25 @@
 import csv
 import time
+import os
+import threading
+import cv2
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
+
+def record_video(duration, filename):
+    cap = cv2.VideoCapture(0)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter(filename, fourcc, 20.0, (640, 480))
+
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        ret, frame = cap.read()
+        if ret:
+            out.write(frame)
+        else:
+            break
+
+    cap.release()
+    out.release()
 
 def record_data(duration=60, filename='recorded_data.csv'):
     BoardShim.enable_dev_board_logger()
@@ -21,7 +40,14 @@ def record_data(duration=60, filename='recorded_data.csv'):
         print(f'Sampling Rate (Fs): {sampling_rate} Hz')  # Print the sampling rate
         num_points = duration * sampling_rate
 
-        with open(filename, mode='w', newline='') as file:
+        os.makedirs('Record', exist_ok=True)
+        csv_filename = os.path.join('Record', filename)
+        video_filename = os.path.join('Record', 'recorded_video.avi')
+
+        video_thread = threading.Thread(target=record_video, args=(duration, video_filename))
+        video_thread.start()
+
+        with open(csv_filename, mode='w', newline='') as file:
             writer = csv.writer(file)
             header = ['N'] + [f'EMG_{i}' for i in emg_channels] + \
                      ['Acc_X', 'Acc_Y', 'Acc_Z'] + \
@@ -30,7 +56,7 @@ def record_data(duration=60, filename='recorded_data.csv'):
 
             start_time = time.time()
             count = 1
-            while time.time() - start_time < duration:
+            while count <= num_points:
                 data = board_shim.get_board_data()  # Get all available data since the last call
                 num_samples = data.shape[1]
                 for i in range(num_samples):
@@ -41,7 +67,9 @@ def record_data(duration=60, filename='recorded_data.csv'):
                           [data[battery_channel][i]]
                     writer.writerow(row)
                     count += 1
-                time.sleep(1)  # Adjust the sleep time as needed
+                time.sleep(1 / sampling_rate)  # Adjust the sleep time to match the sampling rate
+
+        video_thread.join()
 
     except Exception as e:
         print(f'Error: {e}')

@@ -5,7 +5,10 @@ from matplotlib.pyplot import figure
 from feature_extraction import extract_features
 import seaborn as sns
 
-# Function to plot multiple signals with rainbow colors
+from FIltering import apply_filters
+from FIltering import their_filter
+
+# Function to plot multiple signals
 def plot_signals(signals, fs, titles):
     num_channels = signals.shape[1]
     t = np.linspace(0, len(signals) / fs, len(signals))
@@ -24,6 +27,17 @@ def plot_signals(signals, fs, titles):
     plt.tight_layout()
     plt.show()
 
+# Function to plot Emg signal, its mean, filtered and filtered mean
+def mean_plot(emg_signals, fs=500):
+    filtered_Emg = apply_filters(emg_signals, fs)
+    mean_emg_signal = np.mean(emg_signals, axis=1)
+    mean_abs_emg_signal = abs(mean_emg_signal)
+    mean_filtered_emg = np.mean(filtered_Emg, axis=1)
+    mean_abs_filtered_emg = abs(mean_filtered_emg)
+    mean_signals = np.column_stack((mean_emg_signal, mean_abs_emg_signal, mean_filtered_emg, mean_abs_filtered_emg))
+    mean_titles = ['Mean EMG Signal', 'Mean Absolute EMG Signal', 'Mean Filtered EMG Signal',
+                   'Mean Absolute Filtered EMG Signal']
+    plot_signals(mean_signals, fs, mean_titles)
 
 def extract_windowed_features(emg_signals, window_size, fs):
     """
@@ -56,33 +70,10 @@ def extract_windowed_features(emg_signals, window_size, fs):
     features_df = pd.DataFrame(all_windows_features)
     return features_df
 
-def extract_windowed_features_single(emg_signal, window_size, fs):
-    """
-    Extract features for each window of a single EMG signal.
-
-    Parameters:
-    emg_signal (numpy.ndarray): The single EMG signal.
-    window_size (int): The size of the window in samples.
-    fs (int): The sampling frequency.
-
-    Returns:
-    pandas.DataFrame: DataFrame containing the extracted features for each window.
-    """
-    all_windows_features = []
-
-    # Iterate over the data with the defined window size
-    for start in range(0, len(emg_signal) - window_size + 1, window_size):
-        window = emg_signal[start:start + window_size]
-        features = extract_features(window, fs)
-        all_windows_features.append(features)
-
-    # Convert to DataFrame
-    features_df = pd.DataFrame(all_windows_features)
-    return features_df
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    data = pd.read_csv('recorded_data.csv')
+    data = pd.read_csv(r'Record\recorded_data.csv')
     print(data.head())
     # Extract EMG, Gyroscope, and Accelerometer signals
     emg_signals = data[[f'EMG_{i}' for i in range(8)]].values
@@ -94,25 +85,35 @@ if __name__ == "__main__":
     acc_titles = [f'Accelerometer Channel {i + 1}' for i in range(acc_signals.shape[1])]
     vbat = data['VBAT'].values
 
+    filtered_Emg = apply_filters(emg_signals, fs)
+
+    """
+    mean_plot(emg_signals, fs=500)
     mean_emg_signal = np.mean(emg_signals, axis=1)
+    mean_filtered_emg =np.mean(filtered_Emg)
     mean_gy_signal = np.mean(gy_signals, axis=1)
     mean_acc_signal = np.mean(acc_signals, axis=1)
 
     mean_signals = np.column_stack((mean_emg_signal, mean_gy_signal, mean_acc_signal))
     mean_titles = ['Mean EMG Signal', 'Mean Gyroscope Signal', 'Mean Accelerometer Signal']
-
-
+    plot_signals(mean_signals, fs, mean_titles)
+    """
     #Plot entire EMG signals
     plot_signals(emg_signals, fs, emg_titles)
 
-# Plot entire Gyroscope signals
+    plot_signals(filtered_Emg, fs, emg_titles)
+    plot_signals(abs(filtered_Emg), fs, emg_titles)
+    their_filtered_emg = their_filter(emg_signals, fs)
+    #plot_signals(their_filtered_emg, fs, emg_titles)
+
+    """ # Plot entire Gyroscope signals
     plot_signals(gy_signals, fs, gy_titles)
 
     # Plot entire Accelerometer signals
     plot_signals(acc_signals, fs, acc_titles)
 
-
-    plot_signals(mean_signals, fs, mean_titles)
+    """
+    """
 
     # Define window size (0.5 seconds)
     window_size = int(0.5 * fs)
@@ -125,4 +126,4 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 8))
     sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm')
     plt.title('Feature Correlation Matrix')
-    plt.show()
+    plt.show()"""
