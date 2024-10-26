@@ -1,10 +1,14 @@
 import numpy as np
 from scipy.fftpack import fft
+from scipy import signal
 
 # Time-Domain Features
 def mav_feature(emg_signal):
     """Mean Absolute Value (MAV)"""
     return np.mean(np.abs(emg_signal))
+
+ def peak_to_peak_feature(emg_signal):
+     return np.ptp(emg_signal.x)
 
 
 def rms_feature(emg_signal):
@@ -50,6 +54,25 @@ def mdf_feature(emg_signal, fs):
     median_freq = f_values[np.where(cumulative_sum >= cumulative_sum[-1] / 2)[0][0]]
     return median_freq
 
+
+def wt_energy_feature(emg_signal, widths=np.arange(1, 31)):
+    """Compute wavelet transform energy using Continuous Wavelet Transform (CWT)"""
+    # Apply the Continuous Wavelet Transform
+    cwt_matrix = signal.cwt(emg_signal, signal.ricker, widths)
+
+    # Compute energy at each scale
+    energy = np.sum(cwt_matrix ** 2, axis=1)
+    return energy / np.sum(energy)  # Normalize energy for each scale
+
+# Entropy-Based Feature
+def approximate_entropy_feature(emg_signal, m=2, r=0.2):
+    """Approximate Entropy (ApEn)"""
+    def _phi(m):
+        X = np.array([emg_signal[i:i + m] for i in range(len(emg_signal) - m + 1)])
+        C = np.sum(np.max(np.abs(X[:, np.newaxis] - X[np.newaxis, :]), axis=2) <= r, axis=0) / (len(emg_signal) - m + 1)
+        return np.sum(np.log(C)) / (len(emg_signal) - m + 1)
+    return abs(_phi(m) - _phi(m + 1))
+
 # Full Feature Extraction Pipeline
 def extract_features(emg_signal, fs):
 
@@ -58,12 +81,19 @@ def extract_features(emg_signal, fs):
         'RMS': rms_feature(emg_signal),
         'WL': wl_feature(emg_signal),
         'ZC': zc_feature(emg_signal),
-        'SSC': ssc_feature(emg_signal)
+        'SSC': ssc_feature(emg_signal),
+        'Pk2Pk': peak_to_peak_feature(emg_signal)
     }
 
     # Step 3: Frequency-Domain Features
     features['MNF'] = mnf_feature(emg_signal, fs)
     features['MDF'] = mdf_feature(emg_signal, fs)
+
+    # Wavelet Transform Feature
+    features['WaveletEnergy'] = wt_energy_feature(emg_signal)
+
+    # Entropy-Based Feature
+    features['ApEn'] = approximate_entropy_feature(emg_signal)
 
     return features
 
