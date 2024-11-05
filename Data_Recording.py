@@ -8,7 +8,7 @@ from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 def record_video(duration, filename):
     cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(filename, fourcc, 20.0, (640, 480))
+    out = cv2.VideoWriter(filename, fourcc, 27.0, (640, 480)) #put your camera fps
 
     start_time = time.time()
     while time.time() - start_time < duration:
