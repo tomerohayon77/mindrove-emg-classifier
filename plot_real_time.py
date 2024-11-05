@@ -7,6 +7,9 @@ from pyqtgraph.Qt import QtGui, QtCore
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 from mindrove.data_filter import DataFilter, FilterTypes, WindowFunctions, DetrendOperations
 
+from scipy.signal import butter, lfilter, iirnotch
+from FIltering import highpass_filter, lowpass_filter, notch_filter
+
 
 class Graph:
     def __init__(self, board_shim):
@@ -22,7 +25,8 @@ class Graph:
         self.num_points = self.window_size * self.sampling_rate
 
         self.app = QtGui.QApplication([])
-        self.win = pg.GraphicsWindow(title='Mindrove Plot',size=(800, 600))
+        self.win = pg.GraphicsLayoutWidget(title='Mindrove Plot', size=(800, 600))
+        self.win.show()  # Ensure the window is shown
 
         self._init_pens()
         self._init_timeseries()
@@ -48,7 +52,7 @@ class Graph:
         self.plots = list()
         self.curves = list()
         for i in range(len(self.exg_channels)):
-            p = self.win.addPlot(row=i,col=0)
+            p = self.win.addPlot(row=i, col=0)
             p.showAxis('left', False)
             p.setMenuEnabled('left', False)
             p.showAxis('bottom', False)
@@ -57,11 +61,10 @@ class Graph:
                 p.setTitle('TimeSeries Plot')
             self.plots.append(p)
             curve = p.plot(pen=self.pens[i % len(self.pens)])
-            #curve.setDownsampling(auto=True, method='mean', ds=3)
             self.curves.append(curve)
 
     def _init_psd(self):
-        self.psd_plot = self.win.addPlot(row=0,col=1, rowspan=len(self.exg_channels)//2)
+        self.psd_plot = self.win.addPlot(row=0, col=1, rowspan=len(self.exg_channels)//2)
         self.psd_plot.showAxis('left', False)
         self.psd_plot.setMenuEnabled('left', False)
         self.psd_plot.setTitle('PSD Plot')
@@ -89,22 +92,24 @@ class Graph:
         data = self.board_shim.get_current_board_data(self.num_points)
         avg_bands = [0, 0, 0, 0, 0]
         for count, channel in enumerate(self.exg_channels):
-            # plot timeseries
-            DataFilter.detrend(data[channel], DetrendOperations.CONSTANT.value)
-            DataFilter.perform_bandpass(data[channel], self.sampling_rate, 30.0, 56.0, 2,
-                                        FilterTypes.BUTTERWORTH.value, 0)
-            DataFilter.perform_bandstop(data[channel], self.sampling_rate, 50.0, 4.0, 2,
-                                        FilterTypes.BUTTERWORTH.value, 0)
-            DataFilter.perform_bandstop(data[channel], self.sampling_rate, 60.0, 4.0, 2,
-                                        FilterTypes.BUTTERWORTH.value, 0)
-            self.curves[count].setData(data[channel].tolist())
+            # Apply the new filters
+            filtered_signal = highpass_filter(data[channel], cutoff=20, fs=self.sampling_rate)
+            filtered_signal = notch_filter(filtered_signal, notch_freq=50,
+                                           fs=self.sampling_rate)  # For 50 Hz powerline noise
+            filtered_signal = lowpass_filter(filtered_signal, cutoff=self.sampling_rate / 2 - 1,
+                                             fs=self.sampling_rate)  # Adjusted cutoff frequency
+            data[channel] = filtered_signal
+
+            # Plot timeseries excluding the first 250 points
+            self.curves[count].setData(data[channel][250:].tolist())
             if data.shape[1] > self.psd_size:
-                # plot psd
-                psd_data = DataFilter.get_psd_welch(data[channel], self.psd_size, self.psd_size // 2, self.sampling_rate,
-                                   WindowFunctions.BLACKMAN_HARRIS.value)
+                # Plot psd excluding the first 250 points
+                psd_data = DataFilter.get_psd_welch(data[channel][250:], self.psd_size, self.psd_size // 2,
+                                                    self.sampling_rate,
+                                                    WindowFunctions.BLACKMAN_HARRIS.value)
                 lim = min(70, len(psd_data[0]))
                 self.psd_curves[count].setData(psd_data[1][0:lim].tolist(), psd_data[0][0:lim].tolist())
-                # plot bands
+                # Plot bands
                 avg_bands[0] = avg_bands[0] + DataFilter.get_band_power(psd_data, 1.0, 4.0)
                 avg_bands[1] = avg_bands[1] + DataFilter.get_band_power(psd_data, 4.0, 8.0)
                 avg_bands[2] = avg_bands[2] + DataFilter.get_band_power(psd_data, 8.0, 13.0)
@@ -115,7 +120,6 @@ class Graph:
         self.band_bar.setOpts(height=avg_bands)
 
         self.app.processEvents()
-
 
 def main():
     BoardShim.enable_dev_board_logger()
@@ -135,5 +139,37 @@ def main():
             logging.info('Releasing session')
             board_shim.release_session()
 
-
 main()
+
+#The update function without excluding the first 250 points
+"""def update(self):
+    data = self.board_shim.get_current_board_data(self.num_points)
+    avg_bands = [0, 0, 0, 0, 0]
+    for count, channel in enumerate(self.exg_channels):
+        # Apply the new filters
+        filtered_signal = highpass_filter(data[channel], cutoff=20, fs=self.sampling_rate)
+        filtered_signal = notch_filter(filtered_signal, notch_freq=50,
+                                       fs=self.sampling_rate)  # For 50 Hz powerline noise
+        filtered_signal = lowpass_filter(filtered_signal, cutoff=self.sampling_rate / 2 - 1,
+                                         fs=self.sampling_rate)  # Adjusted cutoff frequency
+        data[channel] = filtered_signal
+
+        # Plot timeseries
+        self.curves[count].setData(data[channel].tolist())
+        if data.shape[1] > self.psd_size:
+            # Plot psd
+            psd_data = DataFilter.get_psd_welch(data[channel], self.psd_size, self.psd_size // 2, self.sampling_rate,
+                                                WindowFunctions.BLACKMAN_HARRIS.value)
+            lim = min(70, len(psd_data[0]))
+            self.psd_curves[count].setData(psd_data[1][0:lim].tolist(), psd_data[0][0:lim].tolist())
+            # Plot bands
+            avg_bands[0] = avg_bands[0] + DataFilter.get_band_power(psd_data, 1.0, 4.0)
+            avg_bands[1] = avg_bands[1] + DataFilter.get_band_power(psd_data, 4.0, 8.0)
+            avg_bands[2] = avg_bands[2] + DataFilter.get_band_power(psd_data, 8.0, 13.0)
+            avg_bands[3] = avg_bands[3] + DataFilter.get_band_power(psd_data, 13.0, 30.0)
+            avg_bands[4] = avg_bands[4] + DataFilter.get_band_power(psd_data, 30.0, 50.0)
+
+    avg_bands = [int(x * 100 / len(self.exg_channels)) for x in avg_bands]
+    self.band_bar.setOpts(height=avg_bands)
+
+    self.app.processEvents()"""

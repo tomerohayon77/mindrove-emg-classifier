@@ -6,7 +6,6 @@ from feature_extraction import extract_features
 import seaborn as sns
 
 from FIltering import apply_filters
-from FIltering import their_filter
 
 # Function to plot multiple signals
 def plot_signals(signals, fs, titles):
@@ -30,13 +29,10 @@ def plot_signals(signals, fs, titles):
 # Function to plot Emg signal, its mean, filtered and filtered mean
 def mean_plot(emg_signals, fs=500):
     filtered_Emg = apply_filters(emg_signals, fs)
-    their_filtered_emg = their_filter(emg_signals, fs)
     mean_emg_signal = np.mean(emg_signals, axis=1)
     mean_filtered_emg = np.mean(filtered_Emg, axis=1)
     mean_abs_filtered_emg = abs(mean_filtered_emg)
-    mean_their_filtered_emg = np.mean(their_filtered_emg, axis=1)
-    mean_abs_their_filtered_emg = abs(mean_their_filtered_emg)
-    mean_signals = np.column_stack((mean_emg_signal, mean_filtered_emg, mean_abs_filtered_emg, mean_their_filtered_emg,mean_abs_their_filtered_emg))
+    mean_signals = np.column_stack((mean_emg_signal, mean_filtered_emg, mean_abs_filtered_emg))
     mean_titles = ['Mean EMG Signal', 'Mean Filtered EMG Signal', 'Mean Absolute Filtered EMG Signal',
                    'Mean Their Filtered EMG Signal', 'Mean Absolute Their Filtered EMG Signal']
     plot_signals(mean_signals[200:], fs, mean_titles)
@@ -106,8 +102,6 @@ if __name__ == "__main__":
 
     plot_signals(filtered_Emg, fs, emg_titles)
     plot_signals(abs(filtered_Emg), fs, emg_titles)
-    their_filtered_emg = their_filter(emg_signals, fs)
-    plot_signals(their_filtered_emg, fs, emg_titles)
 
     mean_plot(emg_signals, fs=500)
 
