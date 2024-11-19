@@ -4,7 +4,6 @@ from scipy.stats import entropy
 from scipy.signal import cwt, ricker
 
 
-
 # Time-Domain Features
 def mav_feature(emg_signal):
     """Mean Absolute Value (MAV)"""
@@ -100,7 +99,6 @@ def extract_wavelet_features_cwt(emg_signal, widths=np.arange(1, 31)):
 
 # Full Feature Extraction Pipeline
 def extract_features(emg_signal, fs):
-
     features = {
         'MAV': mav_feature(emg_signal),
         'RMS': rms_feature(emg_signal),
@@ -109,14 +107,15 @@ def extract_features(emg_signal, fs):
         'SSC': ssc_feature(emg_signal),
         'WAMP': willison_amplitude(emg_signal),
         'IEMG': integrated_emg(emg_signal),
+        #Frequency-Domain Features
+        'MNF': mnf_feature(emg_signal, fs),
+        'MDF': mdf_feature(emg_signal, fs),
+        'HJP': hjorth_parameters(emg_signal),
+        'ENT': signal_entropy(emg_signal),
+        #Wavelet-Based Features
+        'CWT': extract_wavelet_features_cwt(emg_signal)
     }
-
-    # Step 3: Frequency-Domain Features
-    features['MNF'] = mnf_feature(emg_signal, fs)
-    features['MDF'] = mdf_feature(emg_signal, fs)
-    features['HJP'] = hjorth_parameters(emg_signal)
-    features['ENT'] = signal_entropy(emg_signal)
-
     return features
+
 
 
