@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.fftpack import fft
 from scipy.stats import entropy
+from scipy.signal import cwt, ricker
+
 
 # Time-Domain Features
 def mav_feature(emg_signal):
@@ -36,7 +38,6 @@ def integrated_emg(signal):
     """Calculate Integrated EMG (IEMG) of an EMG signal."""
     return np.sum(np.abs(signal))
 
-from scipy.stats import entropy
 
 def signal_entropy(signal, num_bins=10):
     """Calculate Entropy of an EMG signal."""
@@ -75,9 +76,29 @@ def hjorth_parameters(signal):
     return activity, mobility, complexity
 
 
+def extract_wavelet_features_cwt(emg_signal, widths=np.arange(1, 31)):
+    """
+    Extract continuous wavelet transform (CWT) features from an EMG signal.
+
+    Parameters:
+    - emg_signal: 1D array-like, the EMG signal data.
+    - widths: 1D array, the range of widths for the wavelet (default: 1 to 30).
+
+    Returns:
+    - features: 2D numpy array of wavelet coefficients.
+    """
+
+    # Perform the continuous wavelet transform using the Ricker (Mexican hat) wavelet
+    cwt_matrix = cwt(emg_signal, ricker, widths)
+
+    # Flatten the CWT matrix to create a feature vector
+    features = cwt_matrix.flatten()
+
+    return features
+
+
 # Full Feature Extraction Pipeline
 def extract_features(emg_signal, fs):
-
     features = {
         'MAV': mav_feature(emg_signal),
         'RMS': rms_feature(emg_signal),
@@ -86,14 +107,15 @@ def extract_features(emg_signal, fs):
         'SSC': ssc_feature(emg_signal),
         'WAMP': willison_amplitude(emg_signal),
         'IEMG': integrated_emg(emg_signal),
+        #Frequency-Domain Features
+        'MNF': mnf_feature(emg_signal, fs),
+        'MDF': mdf_feature(emg_signal, fs),
+        'HJP': hjorth_parameters(emg_signal),
+        'ENT': signal_entropy(emg_signal),
+        #Wavelet-Based Features
+        'CWT': extract_wavelet_features_cwt(emg_signal)
     }
-
-    # Step 3: Frequency-Domain Features
-    features['MNF'] = mnf_feature(emg_signal, fs)
-    features['MDF'] = mdf_feature(emg_signal, fs)
-    features['HJP'] = hjorth_parameters(emg_signal)
-    features['ENT'] = signal_entropy(emg_signal)
-
     return features
+
 
 
