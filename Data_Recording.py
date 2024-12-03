@@ -49,13 +49,14 @@ def record_data(duration=60, filename='recorded_data.csv'):
 
         with open(csv_filename, mode='w', newline='') as file:
             writer = csv.writer(file)
-            header = ['N'] + [f'EMG_{i}' for i in emg_channels] + \
-                     ['Acc_X', 'Acc_Y', 'Acc_Z'] + \
-                     ['Gyro_X', 'Gyro_Y', 'Gyro_Z'] + ['VBAT']
+            header = ['N'] + [f'CH{i+1}' for i in emg_channels] + \
+                     ['AccX', 'AccY', 'AccZ'] + \
+                     ['GyX', 'GyY', 'GyZ'] + ['VBAT']
             writer.writerow(header)
 
             start_time = time.time()
             count = 1
+            i = 0
             while count <= num_points:
                 data = board_shim.get_board_data()  # Get all available data since the last call
                 num_samples = data.shape[1]
@@ -67,7 +68,12 @@ def record_data(duration=60, filename='recorded_data.csv'):
                           [data[battery_channel][i]]
                     writer.writerow(row)
                     count += 1
+
+                if (round(time.time()) - round(start_time) == i):
+                    print(time.time() - start_time)
+                    i+= 1
                 time.sleep(1 / sampling_rate)  # Adjust the sleep time to match the sampling rate
+
 
         video_thread.join()
 
@@ -78,4 +84,4 @@ def record_data(duration=60, filename='recorded_data.csv'):
             board_shim.release_session()
 
 if __name__ == '__main__':
-    record_data(duration=20, filename='recorded_data.csv')
+    record_data(duration=10, filename='recorded_data.csv')

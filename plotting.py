@@ -71,19 +71,19 @@ def extract_windowed_features(emg_signals, window_size, fs):
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    data = pd.read_csv(r'Record\recorded_data.csv')
-    print(data.head())
+    data = pd.read_csv(r'Record/recorded_data.csv')
+    print(data.columns)
     # Extract EMG, Gyroscope, and Accelerometer signals
-    emg_signals = data[[f'EMG_{i}' for i in range(8)]].values
-    gy_signals = data[['Gyro_X', 'Gyro_Y', 'Gyro_Z']].values
-    acc_signals = data[['Acc_X', 'Acc_Y', 'Acc_Z']].values
+    emg_signals = data[[f'CH{i+1}' for i in range(8)]].values
+    gy_signals = data[['GyX', 'GyY', 'GyZ']].values
+    acc_signals = data[['AccX', 'AccY', 'AccZ']].values
 
     emg_titles = [f'EMG Channel {i + 1}' for i in range(emg_signals.shape[1])]
     gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
     acc_titles = [f'Accelerometer Channel {i + 1}' for i in range(acc_signals.shape[1])]
-    vbat = data['VBAT'].values
+    #vbat = data['VBAT'].values
 
-    filtered_Emg = apply_filters(emg_signals, fs)[200:]
+    filtered_Emg = apply_filters(emg_signals, fs)
 
 
 
@@ -106,13 +106,13 @@ if __name__ == "__main__":
     mean_plot(emg_signals, fs=500)
 
 
-    """ # Plot entire Gyroscope signals
+    # Plot entire Gyroscope signals
     plot_signals(gy_signals, fs, gy_titles)
 
     # Plot entire Accelerometer signals
     plot_signals(acc_signals, fs, acc_titles)
 
-    """
+
     """
 
     # Define window size (0.5 seconds)
