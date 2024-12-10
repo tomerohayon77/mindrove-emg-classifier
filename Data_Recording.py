@@ -4,7 +4,7 @@ import os
 import threading
 import cv2
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
-
+#to add the name of the recorded person
 def record_video(duration, filename):
     cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
