@@ -52,7 +52,7 @@ def record_data_and_protocol(duration, csv_filename, protocol):
     """Record data while showing the protocol."""
     BoardShim.enable_dev_board_logger()
     params = MindRoveInputParams()
-    board_shim = BoardShim(גoardIds.MINDROVE_WIFI_BOARD, params)
+    board_shim = BoardShim(BoardIds.MINDROVE_WIFI_BOARD, params)
 
     try:
         # Prepare session
