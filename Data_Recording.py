@@ -9,24 +9,27 @@ from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 # Updated recording protocol with consistent labels for variations
 PROTOCOL = [
     ("Rest", 10, 0),
-    ("Open Hand Soft", 5, 1),
-    ("Open Hand Hard", 5, 1),
-    ("Open Hand Fast", 5, 1),
-    ("Open Hand Slow", 5, 1),
-    ("Close Hand Soft", 5, 2),
-    ("Close Hand Hard", 5, 2),
-    ("Close Hand Fast", 5, 2),
-    ("Close Hand Slow", 5, 2),
-    ("Rotate Hand Right Soft", 5, 3),
-    ("Rotate Hand Right Hard", 5, 3),
-    ("Rotate Hand Right Slow", 5, 3),
-    ("Rotate Hand Right Fast", 5, 3),
-    ("Rotate Hand Left Soft", 5, 4),
-    ("Rotate Hand Left Hard", 5, 4),
-    ("Rotate Hand Left Slow", 5, 4),
-    ("Rotate Hand Left Fast", 5, 4),
-    ("Random Movements", 10, 5),
-    ("Rest Transitions", 3, 0)
+    ("Open Hand Soft", 3, 1),
+    ("Close Hand Soft", 3, 2),
+    ("Open Hand Hard", 3, 1),
+    ("Close Hand Hard", 3, 2),
+    ("Open Hand Fast", 3, 1),
+    ("Close Hand Fast", 3, 2),
+    ("Open Hand Slow", 3, 1),
+    ("Close Hand Slow", 3, 2),
+    ("Rotate Hand Right Soft", 3, 3),
+    ("Rotate Hand Left Soft", 3, 4),
+    ("Rotate Hand Right Hard", 3, 3),
+    ("Rotate Hand Left Hard", 3, 4),
+    ("Rotate Hand Right Slow", 3, 3),
+    ("Rotate Hand Left Slow", 3, 4),
+    ("Rotate Hand Right Fast", 3, 3),
+    ("Rotate Hand Left Fast", 3, 4),
+    ("Random Movements 1", 3, 5),
+    ("Random Movements 2", 3, 5),
+    ("Random Movements 3", 3, 5),
+    ("Random Movements 4", 3, 5),
+    ("Rest", 10, 0)
 ]
 
 def record_video(duration, filename):
@@ -49,7 +52,7 @@ def record_data_and_protocol(duration, csv_filename, protocol):
     """Record data while showing the protocol."""
     BoardShim.enable_dev_board_logger()
     params = MindRoveInputParams()
-    board_shim = BoardShim(BoardIds.MINDROVE_WIFI_BOARD, params)
+    board_shim = BoardShim(גoardIds.MINDROVE_WIFI_BOARD, params)
 
     try:
         # Prepare session

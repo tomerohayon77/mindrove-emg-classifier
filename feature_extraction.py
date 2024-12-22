@@ -99,23 +99,23 @@ def extract_wavelet_features_cwt(emg_signal, widths=np.arange(1, 31)):
 
 # Full Feature Extraction Pipeline
 def extract_features(emg_signal, fs):
+    abs_emg_signal = np.abs(emg_signal)
     features = {
-        'MAV': mav_feature(emg_signal),
+        'MAV': mav_feature(abs_emg_signal),
         'RMS': rms_feature(emg_signal),
-        'WL': wl_feature(emg_signal),
+        'WL': wl_feature(abs_emg_signal),
         'ZC': zc_feature(emg_signal),
         'SSC': ssc_feature(emg_signal),
         'WAMP': willison_amplitude(emg_signal),
-        'IEMG': integrated_emg(emg_signal),
-        #Frequency-Domain Features
+        'IEMG': integrated_emg(abs_emg_signal),
+        # Frequency-Domain Features
         'MNF': mnf_feature(emg_signal, fs),
         'MDF': mdf_feature(emg_signal, fs),
         'HJP': hjorth_parameters(emg_signal),
         'ENT': signal_entropy(emg_signal),
-        #Wavelet-Based Features
+        # Wavelet-Based Features
         'CWT': extract_wavelet_features_cwt(emg_signal)
     }
     return features
-
 
 
