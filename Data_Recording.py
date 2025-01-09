@@ -9,14 +9,14 @@ from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 # Updated recording protocol with consistent labels for variations
 PROTOCOL = [
     ("Rest", 10, 0),
-    ("Open Hand Soft", 3, 1),
     ("Close Hand Soft", 3, 2),
-    ("Open Hand Hard", 3, 1),
+    ("Open Hand Soft", 3, 1),
     ("Close Hand Hard", 3, 2),
-    ("Open Hand Fast", 3, 1),
+    ("Open Hand Hard", 3, 1),
     ("Close Hand Fast", 3, 2),
-    ("Open Hand Slow", 3, 1),
+    ("Open Hand Fast", 3, 1),
     ("Close Hand Slow", 3, 2),
+    ("Open Hand Slow", 3, 1),
     ("Rotate Hand Right Soft", 3, 3),
     ("Rotate Hand Left Soft", 3, 4),
     ("Rotate Hand Right Hard", 3, 3),
@@ -35,7 +35,7 @@ PROTOCOL = [
 def record_video(duration, filename):
     cap = cv2.VideoCapture(0)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(filename, fourcc, 27.0, (640, 480))  # Adjust FPS and resolution as needed
+    out = cv2.VideoWriter(filename, fourcc, cap.get(cv2.CAP_PROP_FPS), (640, 480))  # Use camera's default FPS
 
     start_time = time.time()
     while time.time() - start_time < duration:
@@ -81,6 +81,7 @@ def record_data_and_protocol(duration, csv_filename, protocol):
 
             count = 1
             session_id = os.path.basename(csv_filename).split('.')[0]
+            strat_time = time.time()
             for action, action_duration, label in protocol:
                 # Print the action at the start of the section
                 print(f"\n{action}")
@@ -101,7 +102,7 @@ def record_data_and_protocol(duration, csv_filename, protocol):
                         action_time = elapsed_time
 
                         # Write data to CSV, including SessionID, Label, Action Name, and ActionTime
-                        row = [session_id, count, elapsed_time] + \
+                        row = [session_id, count, time.time() - strat_time] + \
                               [data[channel][i] for channel in emg_channels] + \
                               [data[channel][i] for channel in accel_channels] + \
                               [data[channel][i] for channel in gyro_channels] + \
@@ -115,9 +116,6 @@ def record_data_and_protocol(duration, csv_filename, protocol):
                     if current_elapsed > elapsed:
                         elapsed = current_elapsed
                         print(f"{elapsed}s")  # Print the elapsed time for the action
-
-                # Pause for a moment to ensure smooth transition between actions
-                time.sleep(0.5)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -139,12 +137,19 @@ if __name__ == '__main__':
     # Calculate total recording time
     total_duration = sum([duration for _, duration, _ in PROTOCOL])
 
+    # Create an event for synchronization
+    start_event = threading.Event()
+
     # Start video recording in a separate thread
-    video_thread = threading.Thread(target=record_video, args=(total_duration, video_filename))
+    video_thread = threading.Thread(target=lambda: (start_event.wait(), record_video(total_duration, video_filename)))
     video_thread.start()
 
-    # Record data and display protocol
-    record_data_and_protocol(total_duration, csv_filename, PROTOCOL)
+    # Start data recording in a separate thread
+    data_thread = threading.Thread( target=lambda: (start_event.wait(), record_data_and_protocol(total_duration, csv_filename, PROTOCOL)))
+    data_thread.start()
+
+    # Trigger the start event
+    start_event.set()
 
     # Ensure video recording finishes
     video_thread.join()

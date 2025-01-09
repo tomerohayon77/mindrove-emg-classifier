@@ -71,7 +71,8 @@ def extract_windowed_features(emg_signals, window_size, fs):
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    data = pd.read_csv(r'Record/recorded_data.csv')
+    #data = pd.read_csv(r'Record/recorded_data.csv')
+    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\Roee_Savion_9.1_20250109_180436.csv')
     print(data.columns)
     # Extract EMG, Gyroscope, and Accelerometer signals
     emg_signals = data[[f'CH{i+1}' for i in range(8)]].values
