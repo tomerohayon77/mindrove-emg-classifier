@@ -1,14 +1,12 @@
-import argparse
 import logging
 
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
 
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
-from mindrove.data_filter import DataFilter, FilterTypes, WindowFunctions, DetrendOperations
+from mindrove.data_filter import DataFilter, WindowFunctions
 
-from scipy.signal import butter, lfilter, iirnotch
-from FIltering import highpass_filter, lowpass_filter, notch_filter
+from data_recording.FIltering import highpass_filter, lowpass_filter, notch_filter
 
 
 class Graph:

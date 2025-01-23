@@ -15,7 +15,7 @@ plt.legend()
 def animate(i):
     try:
         # Read new data for each animation frame
-        data = pd.read_csv('../MindRoveSDK/originals/data.csv')
+        data = pd.read_csv('../../MindRoveSDK/originals/data.csv')
 
         # Debug: Print out the data being read
         print(f"Frame {i}: Read data:\n", data.head())

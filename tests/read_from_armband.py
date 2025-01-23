@@ -1,11 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds, MindroveConfigMode
-from mindrove.data_filter import DataFilter, FilterTypes, DetrendOperations
+from mindrove.board_shim import BoardShim
 import time
-import armband_functions as funcs
-import plot_live as EMGPlot
-from matplotlib.animation import FuncAnimation
+from tests import armband_functions as funcs
 
 start_time = time.time()
 elapsed_time = time.time()-start_time

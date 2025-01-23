@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     # File paths
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    directory = os.path.join('Patient_Records', person_name)
+    directory = os.path.join('../Patient_Records', person_name)
     os.makedirs(directory, exist_ok=True)
     csv_filename = os.path.join(directory, f"{person_name}_{timestamp}.csv")
     video_filename = os.path.join(directory, f"{person_name}_{timestamp}.avi")
