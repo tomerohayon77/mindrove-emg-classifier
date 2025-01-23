@@ -10,7 +10,7 @@ from FIltering import apply_filters
 # Function to plot multiple signals
 def plot_signals(signals, fs, titles):
     num_channels = signals.shape[1]
-    t = np.linspace(0, len(signals) / fs, len(signals))
+    t = np.linspace(0, len(signals), len(signals))
     colors = plt.cm.rainbow(np.linspace(0, 1, num_channels))  # Generate a list of rainbow colors
 
     plt.figure(figsize=(15, 10))
@@ -35,7 +35,7 @@ def mean_plot(emg_signals, fs=500):
     mean_signals = np.column_stack((mean_emg_signal, mean_filtered_emg, mean_abs_filtered_emg))
     mean_titles = ['Mean EMG Signal', 'Mean Filtered EMG Signal', 'Mean Absolute Filtered EMG Signal',
                    'Mean Their Filtered EMG Signal', 'Mean Absolute Their Filtered EMG Signal']
-    plot_signals(mean_signals[200:], fs, mean_titles)
+    plot_signals(mean_signals, fs, mean_titles)
 
 def extract_windowed_features(emg_signals, window_size, fs):
     """
@@ -72,12 +72,27 @@ def extract_windowed_features(emg_signals, window_size, fs):
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
     #data = pd.read_csv(r'Record/recorded_data.csv')
-    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\Roee_Savion_9.1_20250109_180436.csv')
+    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Ilay_savion_9.1_2\Ilay_savion_9.1_2_20250112_111812.csv')
     print(data.columns)
+
+    # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
+    channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8', 'AccX', 'AccY', 'AccZ', 'GyX', 'GyY', 'GyZ']
+
+    # Replace zeros with NaN
+    data[channels] = data[channels].replace(0, np.nan)
+
+    # Interpolate missing values (linear interpolation)
+    data[channels] = data[channels].interpolate(method='linear', axis=0)
+
+    # Forward-fill remaining NaNs (if at the start of the data)
+    data[channels] = data[channels].bfill()
+
     # Extract EMG, Gyroscope, and Accelerometer signals
     emg_signals = data[[f'CH{i+1}' for i in range(8)]].values
     gy_signals = data[['GyX', 'GyY', 'GyZ']].values
     acc_signals = data[['AccX', 'AccY', 'AccZ']].values
+
+
 
     emg_titles = [f'EMG Channel {i + 1}' for i in range(emg_signals.shape[1])]
     gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
