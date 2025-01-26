@@ -38,9 +38,23 @@ if __name__ == "__main__":
             indices = np.where(labels == label)[0]
             plt.plot(indices, filtered_Emg[indices, channel], color=color, label=f'Label {label}')
 
-        plt.title('Mean Filtered EMG Signal with Different Colors for Each Label')
+        plt.title(f' Filtered EMG channel{channel}')
         plt.xlabel('Time (s)')
         plt.ylabel('Amplitude')
         plt.legend()
         plt.grid(True)
         plt.show()
+
+    plt.figure(figsize=(10, 5))
+    unique_labels = np.unique(labels)
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
+    for label, color in zip(unique_labels, colors):
+        indices = np.where(labels == label)[0]
+        plt.plot(indices, mean_filtered_emg[indices], color=color, label=f'Label {label}')
+
+    plt.title(f' Filtered EMG mean')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
