@@ -6,7 +6,8 @@ from FIltering import apply_filters
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\Roee_Savion_9.1_20250109_180436.csv')[0:7502]
+
+    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\roee_savion_9.1_labeled.csv')
     print(data.columns)
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
@@ -23,38 +24,42 @@ if __name__ == "__main__":
 
     # Extract EMG, Gyroscope, and Accelerometer signals
     emg_signals = data[[f'CH{i+1}' for i in range(8)]].values
-    labels = data['Label'].values
 
+    labels = data['Label'].values
     filtered_Emg = apply_filters(emg_signals, fs)
+
     mean_filtered_emg = np.mean(filtered_Emg, axis=1)
 
     # Plot the mean filtered EMG signal with different colors for each label
-
     for channel in range(emg_signals.shape[1]):
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(12, 6))
         unique_labels = np.unique(labels)
         colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
         for label, color in zip(unique_labels, colors):
             indices = np.where(labels == label)[0]
             plt.plot(indices, filtered_Emg[indices, channel], color=color, label=f'Label {label}')
 
-        plt.title(f' Filtered EMG channel{channel}')
+        plt.title(f'Filtered EMG channel {channel}')
         plt.xlabel('Time (s)')
         plt.ylabel('Amplitude')
         plt.legend()
         plt.grid(True)
+        plt.xticks(np.arange(0, len(filtered_Emg), 100))
+        plt.yticks(np.arange(int(np.min(filtered_Emg[:, channel])), int(np.max(filtered_Emg[:, channel])) + 1, 250))
         plt.show()
 
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 6))
     unique_labels = np.unique(labels)
     colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
     for label, color in zip(unique_labels, colors):
         indices = np.where(labels == label)[0]
         plt.plot(indices, mean_filtered_emg[indices], color=color, label=f'Label {label}')
 
-    plt.title(f' Filtered EMG mean')
+    plt.title('Filtered EMG mean')
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
     plt.legend()
     plt.grid(True)
+    plt.xticks(np.arange(0, len(filtered_Emg) , 100))
+    plt.yticks(np.arange(int(np.min(mean_filtered_emg)), int(np.max(mean_filtered_emg)) + 1, 250))
     plt.show()
