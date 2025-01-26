@@ -27,12 +27,12 @@ def notch_filter(filtered_emg, notch_freq=50.0, fs=500, Q=30):
     return lfilter(b, a, filtered_emg)
 
 def apply_filters(emg_signals, fs):
-    padded_signals = np.pad(emg_signals, ((200, 0), (0, 0)), mode='edge')  # Pad 200 samples
+    padded_signals = np.pad(emg_signals, ((300, 0), (0, 0)), mode='edge')  # Pad 200 samples
     filtered_emg_signals = emg_signals.copy()
     for i in range(padded_signals.shape[1]):
         filtered_signal = highpass_filter(padded_signals[:, i], cutoff=20, fs=fs)
         filtered_signal = notch_filter(filtered_signal, notch_freq=50, fs=fs)  # For 50 Hz powerline noise
         filtered_signal = lowpass_filter(filtered_signal, cutoff=fs/2-1, fs=fs)  # Adjusted cutoff frequency
         # Remove padding after filtering
-        filtered_emg_signals[:, i] = filtered_signal[200:]
+        filtered_emg_signals[:, i] = filtered_signal[300:]
     return filtered_emg_signals
