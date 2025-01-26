@@ -20,6 +20,9 @@ def load_feature_files(directory):
         raise ValueError("No feature files found in the directory.")
     return pd.concat(all_features, ignore_index=True)
 
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
+
 def regular_train_test_split(features_df):
     # Drop rows with label 5
     features_df = features_df[features_df['Label'] != 5]
@@ -28,8 +31,10 @@ def regular_train_test_split(features_df):
     majority_class = features_df[features_df['Label'] == 0]
     minority_classes = features_df[features_df['Label'] != 0]
 
-    # Undersample the majority class
+    # Determine the sample size for undersampling
     sample_size = min(len(majority_class), len(minority_classes))
+
+    # Undersample the majority class
     majority_class_undersampled = majority_class.sample(sample_size, random_state=42)
 
     # Combine the undersampled majority class with the minority classes
@@ -37,6 +42,11 @@ def regular_train_test_split(features_df):
 
     X = balanced_df.drop(columns=['Label', 'SessionID'])
     y = balanced_df['Label']
+
+    # Handle NaN values
+    imputer = SimpleImputer(strategy='mean')
+    X = imputer.fit_transform(X)
+
     return train_test_split(X, y, test_size=0.2, random_state=42)
 
 def train_svm(X_train, X_test, y_train, y_test):
