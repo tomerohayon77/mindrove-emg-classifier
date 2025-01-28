@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from FIltering import apply_filters
-
+#
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
     x = 30000
