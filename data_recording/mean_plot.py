@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 from FIltering import apply_filters
 
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
+    x = 28500
+    indexes = np.linspace(x,x+1500,1500).astype(int)
 
-    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\roee_savion_9.1_labeled.csv')
+    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\heni_olier2\heni_olier_labeld.csv')
     print(data.columns)
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
@@ -42,10 +43,6 @@ if __name__ == "__main__":
         plt.title(f'Filtered EMG channel {channel}')
         plt.xlabel('Time (s)')
         plt.ylabel('Amplitude')
-        plt.legend()
-        plt.grid(True)
-        plt.xticks(np.arange(0, len(filtered_Emg), 100))
-        plt.yticks(np.arange(int(np.min(filtered_Emg[:, channel])), int(np.max(filtered_Emg[:, channel])) + 1, 250))
         plt.show()
 
     plt.figure(figsize=(12, 6))
@@ -58,8 +55,4 @@ if __name__ == "__main__":
     plt.title('Filtered EMG mean')
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
-    plt.legend()
-    plt.grid(True)
-    plt.xticks(np.arange(0, len(filtered_Emg) , 100))
-    plt.yticks(np.arange(int(np.min(mean_filtered_emg)), int(np.max(mean_filtered_emg)) + 1, 250))
     plt.show()

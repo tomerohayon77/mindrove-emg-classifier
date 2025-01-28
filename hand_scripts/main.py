@@ -14,7 +14,7 @@ if __name__ == "__main__":
         shared_data['action'] = 0  # Initialize shared variable
         shared_data['start'] = 0  # Initialize shared variable
         shared_data['connected'] = 0  # Initialize shared variable
-#
+
         p1 = Process(target=wi_fi.wi_fi, args=(shared_data,))
         p2 = Process(target=check_move.check_move, args=(shared_data,))
         #p3 = Process(target=commands.commands, args=(shared_data,))
