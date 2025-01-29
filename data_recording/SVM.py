@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-#MODEL_PATH = 'C:\Technion\Project_A\Project_A\svm_model.pkl'  # File path to save/load the model
+#MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_2.pkl'  # File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -43,7 +43,7 @@ def regular_train_test_split(features_df):
     imputer = SimpleImputer(strategy='mean')
     X = imputer.fit_transform(X)
 
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return train_test_split(X, y, test_size=0.1, random_state=42)
 
 
 def train_svm(X_train, X_test, y_train, y_test):
