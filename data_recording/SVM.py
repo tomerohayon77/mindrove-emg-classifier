@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = 'C:\Technion\Project_A\Project_A\svm_model.pkl'  # File path to save/load the model
+#MODEL_PATH = 'C:\Technion\Project_A\Project_A\svm_model.pkl'  # File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -43,7 +43,7 @@ def regular_train_test_split(features_df):
     imputer = SimpleImputer(strategy='mean')
     X = imputer.fit_transform(X)
 
-    return train_test_split(X, y, test_size=0.1, random_state=42)
+    return train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 def train_svm(X_train, X_test, y_train, y_test):
@@ -51,8 +51,8 @@ def train_svm(X_train, X_test, y_train, y_test):
     svm_model.fit(X_train, y_train)
 
     # Save the trained model
-    joblib.dump(svm_model, MODEL_PATH)
-    print(f"Model saved to {MODEL_PATH}")
+    #joblib.dump(svm_model, MODEL_PATH)
+    #print(f"Model saved to {MODEL_PATH}")
 
     y_pred = svm_model.predict(X_test)
     print(classification_report(y_test, y_pred))
@@ -69,6 +69,7 @@ def train_svm(X_train, X_test, y_train, y_test):
 
 if __name__ == "__main__":
     directory = r'C:\Technion\Project_A\Project_A\data_recording\training_feature_files'
+    #directory = r'C:\Technion\Project_A\Project_A\all_features_files'
     features_df = load_feature_files(directory)
     X_train, X_test, y_train, y_test = regular_train_test_split(features_df)
     train_svm(X_train, X_test, y_train, y_test)

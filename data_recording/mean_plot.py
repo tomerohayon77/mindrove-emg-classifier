@@ -5,11 +5,11 @@ from FIltering import apply_filters
 #
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    x = 13500
+    x = 5500
 
     indexes = np.linspace(x,x+1499,1500).astype(int)
 
-    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\shira_hazrati_labeld.csv')
+    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\behor_second_try\behor_second_try_20250129_164114.csv')
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
     channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8', 'AccX', 'AccY', 'AccZ', 'GyX', 'GyY', 'GyZ']
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
         for label, color in zip(unique_labels, colors):
             indices = np.where(labels == label)[0]
-            plt.plot(indices, filtered_Emg[indices, channel], color=color, label=f'Label {label}')
+            plt.plot(indexes, filtered_Emg[indexes, channel], color=color, label=f'Label {label}')
 
         plt.title(f'Filtered EMG channel {channel}')
         plt.xlabel('Time (s)')
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
     for label, color in zip(unique_labels, colors):
         indices = np.where(labels == label)[0]
-        plt.plot(indices, mean_filtered_emg[indices], color=color, label=f'Label {label}')
+        plt.plot(indexes, mean_filtered_emg[indexes], color=color, label=f'Label {label}')
 
     plt.title('Filtered EMG mean')
     plt.xlabel('Time (s)')
