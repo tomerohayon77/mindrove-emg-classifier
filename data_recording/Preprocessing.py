@@ -104,4 +104,4 @@ def process_all_csv_files(directory):
 
 if __name__ == "__main__":
     #process_all_csv_files(r'C:\Users\User\PycharmProjects\Project_A\Paitient_records_for_features')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Patient_Records\shira_hazrati3\shira_hazrati_labeld.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Patient_Records\liad_olier_left\liad_olier_left_labeled.csv')
