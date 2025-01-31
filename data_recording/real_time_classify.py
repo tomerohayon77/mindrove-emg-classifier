@@ -10,7 +10,7 @@ import pandas as pd
 model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_2.pkl"
 svm_model = joblib.load(model_path)
 num_points = 200
-
+gyro_threshold = 2000
 def normalize_signals(emg_signals):
     min_val = np.min(emg_signals, axis=0, keepdims=True)
     max_val = np.max(emg_signals, axis=0, keepdims=True)
@@ -44,6 +44,7 @@ def main():
         board_shim.start_stream()
         print("start streaming")
         emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
+        gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
         sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
         time.sleep(3)  # Wait for the board to start streaming
 
@@ -52,11 +53,11 @@ def main():
             if board_shim.get_board_data_count() >= num_points:
                 new_data = board_shim.get_board_data()
                 emg_data = np.array(new_data[emg_channels])
+                gyro_data = np.array(new_data[gyro_channels])
 
-                movement = movement_from_model(emg_data, sampling_rate)
-
-
-                print("the move is ", movement)
+                if np.any(gyro_data > gyro_threshold):
+                    movement = movement_from_model(emg_data, sampling_rate)
+                    print("the move is ", movement)
 
     except Exception as e:
         print(f"Error: {e}")
