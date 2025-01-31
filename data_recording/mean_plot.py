@@ -5,7 +5,7 @@ from FIltering import apply_filters
 #
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    x = 5500
+    x = 4000
 
     indexes = np.linspace(x,x+1499,1500).astype(int)
 

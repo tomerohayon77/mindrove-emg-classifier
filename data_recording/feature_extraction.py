@@ -113,11 +113,11 @@ def extract_wavelet_features_cwt(emg_signal, widths=np.arange(1, 31)):
 def extract_features(emg_signal, fs):
     abs_emg_signal = np.abs(emg_signal)
     features = {}
-    num_channels = emg_signal.shape[1]
+    num_channels = emg_signal.shape[0]
 
     for channel in range(num_channels):
-        channel_signal = emg_signal[:, channel]
-        abs_channel_signal = abs_emg_signal[:, channel]
+        channel_signal = emg_signal[channel, :]
+        abs_channel_signal = abs_emg_signal[channel, :]
         activity, mobility, complexity = hjorth_parameters(channel_signal)
         features.update({
             f'MAV_CH{channel + 1}': mav_feature(abs_channel_signal),  # Time-Domain
