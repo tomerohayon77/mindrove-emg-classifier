@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     indexes = np.linspace(x,x+1499,1500).astype(int)
 
-    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\shira_hazrati_1_2_try2\shira_hazrati_1_2_try2_20250201_121242.csv')
+    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\heni_olier_31_1_try2\heni_olier_try2_labeled.csv')
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
     channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8', 'AccX', 'AccY', 'AccZ', 'GyX', 'GyY', 'GyZ']

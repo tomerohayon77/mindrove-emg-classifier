@@ -60,7 +60,7 @@ def real_time_classify():
                 all_emg_data = all_emg_data[:, -memory_points:]
                 gyro_data = np.array(new_data[gyro_channels])
 
-                if np.any(gyro_data > gyro_threshold) and all_emg_data.shape[1] >= window_size:
+                if np.any(np.abs(gyro_data) > gyro_threshold) and all_emg_data.shape[1] >= window_size:
                     movement = movement_from_model(all_emg_data[:,-window_size:], sampling_rate)
                     print("the move is ", movement)
 
