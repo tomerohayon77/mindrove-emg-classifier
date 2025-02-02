@@ -5,11 +5,12 @@ from FIltering import apply_filters
 #
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
-    x = 4000
+    x = 21500
+
 
     indexes = np.linspace(x,x+1499,1500).astype(int)
 
-    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
+    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\shira_hazrati_1_2_try2\shira_hazrati_1_2_try2_20250201_121242.csv')
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
     channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8', 'AccX', 'AccY', 'AccZ', 'GyX', 'GyY', 'GyZ']

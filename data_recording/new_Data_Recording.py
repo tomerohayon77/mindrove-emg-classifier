@@ -8,16 +8,21 @@ from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 
 # Updated recording protocol with consistent labels for variations
 PROTOCOL = [
-    ("Rest", 3, 0),
+    ("Rest", 5, 0),
     ("Close ", 3, 0),
     ("Open ", 3, 0),
-    ("Right ", 3, 0),
-    ("Left ", 3, 0),
+    ("Close", 3, 0),
+    ("Open", 3, 0),
     ("Close", 3, 0),
     ("Open", 3, 0),
     ("Right", 3, 0),
     ("Left", 3, 0),
-    ("Rest", 3, 0),
+    ("Right", 3, 0),
+    ("Left", 3, 0),
+    ("Right ", 3, 0),
+    ("Left ", 3, 0),
+    ("Rest", 5, 0),
+
 ]
 
 def record_video(duration, filename):

@@ -10,8 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
 #MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_2.pkl'  # File path to save/load the model
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model.pkl"
-svm_model_2 = joblib.load(model_path)
+
 
 def load_feature_files(directory):
     all_features = []
@@ -44,7 +43,7 @@ def regular_train_test_split(features_df):
     imputer = SimpleImputer(strategy='mean')
     X = imputer.fit_transform(X)
 
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return train_test_split(X, y, test_size=0.1, random_state=42)
 
 
 def train_svm(X_train, X_test, y_train, y_test):
@@ -54,23 +53,11 @@ def train_svm(X_train, X_test, y_train, y_test):
     # Save the trained model
     #joblib.dump(svm_model, MODEL_PATH)
     #print(f"Model saved to {MODEL_PATH}")
-    print(X_test)
-    y_pred = svm_model.predict(X_test)
-    y_pred_2 = svm_model_2.predict(X_test)
 
+    y_pred = svm_model.predict(X_test)
     print(classification_report(y_test, y_pred))
 
     cm = confusion_matrix(y_test, y_pred)
-    plt.figure(figsize=(10, 7))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=np.unique(y_test), yticklabels=np.unique(y_test))
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.title('Confusion Matrix')
-    plt.show()
-
-    print(classification_report(y_test, y_pred_2))
-
-    cm = confusion_matrix(y_test, y_pred_2)
     plt.figure(figsize=(10, 7))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=np.unique(y_test), yticklabels=np.unique(y_test))
     plt.xlabel('Predicted')
