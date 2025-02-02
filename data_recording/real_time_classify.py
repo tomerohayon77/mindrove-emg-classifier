@@ -5,14 +5,15 @@ import joblib
 import numpy as np
 from new_feature_extraction import extract_features
 import time
-import pandas as pd
+from multiprocessing import Manager
 
 model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_2.pkl"
 svm_model = joblib.load(model_path)
-num_points = 50
+num_points = 100
 memory_points = 1000
 gyro_threshold = 2000
 window_size = 200
+
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -36,39 +37,67 @@ def movement_from_model(emg_data,sampling_rate):
     return svm_model.predict(features_array)
 
 
-def real_time_classify():
-    BoardShim.enable_dev_board_logger()
-    params = MindRoveInputParams()
-    board_shim = BoardShim(BoardIds.MINDROVE_WIFI_BOARD, params)
-    try:
-        # Prepare session
-        board_shim.prepare_session()
-        board_shim.start_stream()
-        print("start streaming")
-        emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
-        gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
-        sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
-        time.sleep(3)  # Wait for the board to start streaming
-        all_emg_data = np.empty((8,0))
+def real_time_classify(shared_data):
+    while True:
+        if shared_data['connected'] == 1:
+            BoardShim.enable_dev_board_logger()
+            params = MindRoveInputParams()
+            board_shim = BoardShim(BoardIds.MINDROVE_WIFI_BOARD, params)
+            try:
+                # Prepare session
+                board_shim.prepare_session()
+                board_shim.start_stream()
+                print("start streaming")
+                emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
+                gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
+                sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
+                time.sleep(3)  # Wait for the board to start streaming
+                all_emg_data = np.empty((8,0))
 
-        print("start classifying")
-        while True:
-            if board_shim.get_board_data_count() >= num_points:
-                new_data = board_shim.get_board_data()
-                emg_data = np.array(new_data[emg_channels])
-                all_emg_data = np.hstack((all_emg_data, emg_data))
-                all_emg_data = all_emg_data[:, -memory_points:]
-                gyro_data = np.array(new_data[gyro_channels])
+                print("start classifying")
+                while True:
+                    if board_shim.get_board_data_count() >= num_points:
+                        new_data = board_shim.get_board_data()
+                        emg_data = np.array(new_data[emg_channels])
+                        all_emg_data = np.hstack((all_emg_data, emg_data))
+                        all_emg_data = all_emg_data[:, -memory_points:]
+                        gyro_data = np.array(new_data[gyro_channels])
 
-                if np.any(np.abs(gyro_data) > gyro_threshold) and all_emg_data.shape[1] >= window_size:
-                    movement = movement_from_model(all_emg_data[:,-window_size:], sampling_rate)
-                    print("the move is ", movement)
+                        if np.any(np.abs(gyro_data) > gyro_threshold) and all_emg_data.shape[1] >= window_size:
+                            movement = movement_from_model(all_emg_data[:,-window_size:], sampling_rate)
+                            print("the move is ", movement)
+                            if movement == 1:
+                                shared_data['move'] = 'open'
+                            elif movement == 2:
+                                shared_data['move'] = 'close'
+                            elif movement == 3:
+                                shared_data['move'] = 'right'
+                            elif movement == 4:
+                                shared_data['move'] = 'left'
+                            if movement != 0:
+                                shared_data['action'] = 1
+                                time.sleep(2)
 
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        if board_shim.is_prepared():
-            board_shim.release_session()
+
+
+
+            except Exception as e:
+                print(f"Error: {e}")
+            finally:
+                if board_shim.is_prepared():
+                    board_shim.release_session()
 
 if __name__ == "__main__":
-    real_time_classify()
+    with Manager() as manager:
+        shared_data = manager.dict()
+
+        from multiprocessing import Process
+
+        p = Process(target=real_time_classify, args=(shared_data,))
+        p.start()
+
+        try:
+            p.join()
+        except KeyboardInterrupt:
+            p.terminate()
+            print("[commands] Stopped by user.")

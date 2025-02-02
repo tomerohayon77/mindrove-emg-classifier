@@ -28,11 +28,11 @@ def commands(shared_data):
                     if shared_data['action'] == 1:
                         shared_data['action'] = 0
 
-                        if shared_data['move'] == 'up':
+                        if shared_data['move'] == 'up' or shared_data['move'] == 'open':
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["open"]))
                             print("Sending OPEN command")
 
-                        elif shared_data['move'] == 'down':
+                        elif shared_data['move'] == 'down' or shared_data['move'] == 'close':
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["close"]))
                             print("Sending CLOSE command")
 
