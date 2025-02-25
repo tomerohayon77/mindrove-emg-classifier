@@ -33,31 +33,47 @@ def segment_emg_signals(emg_signals, labels, session_id,  window_size, overlap, 
 
 def normalize_signals(emg_signals):
     """
-    Normalize EMG signals using min-max normalization.
+    Normalize EMG signals using RMS normalization.
 
     Parameters:
     emg_signals (numpy.ndarray): The EMG signals to normalize.
 
     Returns:
-    numpy.ndarray: The normalized EMG signals.
+    numpy.ndarray: The RMS normalized EMG signals.
     """
-    min_val = np.min(emg_signals, axis=0, keepdims=True)
-    max_val = np.max(emg_signals, axis=0, keepdims=True)
-    normalized_signals = (emg_signals - min_val) / (max_val - min_val)
+    rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
+    normalized_signals = emg_signals / rms_value
     return normalized_signals
+
+def average_reference(emg_signals):
+    """
+    Perform average referencing by subtracting the mean of all channels from each channel.
+
+    Parameters:
+    emg_signals (numpy.ndarray): The EMG signals to average reference.
+
+    Returns:
+    numpy.ndarray: The average referenced EMG signals.
+    """
+    mean_signal = np.mean(emg_signals, axis=1, keepdims=True)
+    referenced_signals = emg_signals - mean_signal
+    return referenced_signals
 
 def process_csv_file(file_path, fs=500):
     # Load the recorded data
     df = pd.read_csv(file_path)
 
     # Extract EMG, Gyroscope, and Accelerometer signals
-    emg_signals = df[[f'CH{i+1}' for i in range(8)]].values
-    labels = df['Label'].values
-    session_id = df['SessionID'].values
+    emg_signals = df[[f'EMG{i + 1}' for i in range(8)]].values
+    emg_signals = average_reference(emg_signals)
+    #labels = df['label'].values
+    labels = df['Task_number'].values
+   # session_id = df['SessionID'].values
+    session_id = df['Angle_sample'].values
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
-    channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8']
-
+    #channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8']
+    channels = [f'EMG{i + 1}' for i in range(8)]
     # Replace zeros with NaN
     df[channels] = df[channels].replace(0, np.nan)
 
@@ -103,5 +119,5 @@ def process_all_csv_files(directory):
                 process_csv_file(file_path)
 
 if __name__ == "__main__":
-    #process_all_csv_files(r'C:\Users\User\PycharmProjects\Project_A\Paitient_records_for_features')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Patient_Records\liad_olier_left\liad_olier_left_labeled.csv')
+    process_all_csv_files(r'C:\Users\User\PycharmProjects\Project_A\EMG')
+    #process_csv_file(r'C:\Technion\Project_A\Project_A\Patient_Records\liad_olier_left\liad_olier_left_labeled.csv')

@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+
+from data_recording.Preprocessing import average_reference
 from feature_extraction import extract_features
 import seaborn as sns
+from Preprocessing import average_reference
 
 from FIltering import apply_filters
 
@@ -72,7 +75,7 @@ def extract_windowed_features(emg_signals, window_size, fs):
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
     #data = pd.read_csv(r'Record/recorded_data.csv')
-    data = pd.read_csv(r'C:\Technion\Project_A\Project_A\Patient_Records\albert_olier1\albert_record_labled.csv')
+    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\Roee_Savion_9.1_20250109_180436.csv')
     print(data.columns)
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
@@ -98,11 +101,10 @@ if __name__ == "__main__":
     gy_titles = [f'Gyroscope Channel {i + 1}' for i in range(gy_signals.shape[1])]
     acc_titles = [f'Accelerometer Channel {i + 1}' for i in range(acc_signals.shape[1])]
     #vbat = data['VBAT'].values
-
+    average_reference_titles = [f'Average Referenced EMG Channel {i + 1}' for i in range(emg_signals.shape[1])]
     filtered_Emg = apply_filters(emg_signals, fs)
-
-
-
+    average_reference_signals= average_reference(emg_signals)
+    filtered_Emg_reference = apply_filters(average_reference_signals, fs)
     """
     mean_emg_signal = np.mean(emg_signals, axis=1)
     mean_filtered_emg =np.mean(filtered_Emg)
@@ -115,10 +117,11 @@ if __name__ == "__main__":
     """
     #Plot entire EMG signals
     plot_signals(emg_signals, fs, emg_titles)
-
     plot_signals(filtered_Emg, fs, emg_titles)
     plot_signals(abs(filtered_Emg), fs, emg_titles)
-
+    plot_signals(average_reference_signals, fs, average_reference_titles)
+    plot_signals(filtered_Emg_reference, fs, average_reference_titles)
+    plot_signals(abs(filtered_Emg_reference), fs, average_reference_titles)
     mean_plot(emg_signals, fs=500)
 
 

@@ -123,9 +123,12 @@ def extract_features(emg_signal, fs):
             f'MAV_CH{channel + 1}': mav_feature(abs_channel_signal),  # Time-Domain
             f'RMS_CH{channel + 1}': rms_feature(channel_signal),  # Time-Domain
             f'WL_CH{channel + 1}': wl_feature(abs_channel_signal),  # Time-Domain
-           # f'ZC_CH{channel + 1}': zc_feature(channel_signal),  # Time-Domain
-            f'SSC_CH{channel + 1}': ssc_feature(channel_signal),  # Time-Domain
-            f'MNF_CH{channel + 1}': mnf_feature(channel_signal, fs),  # Frequency-Domain
+            f'ZC_CH{channel + 1}': zc_feature(channel_signal),  # Time-Domain
+            f'SSC_CH{channel + 1}': ssc_feature(channel_signal)  # Time-Domain
+        })
+    return features
+
+"""f'MNF_CH{channel + 1}': mnf_feature(channel_signal, fs),  # Frequency-Domain
             #f'MDF_CH{channel + 1}': mdf_feature(channel_signal, fs),  # Frequency-Domain
             f'HJP_Activity_CH{channel + 1}': activity,  # Time-Domain
             f'HJP_Mobility_CH{channel + 1}': mobility,  # Time-Domain
@@ -137,6 +140,4 @@ def extract_features(emg_signal, fs):
             f'Kurtosis_CH{channel + 1}': kurtosis_feature(channel_signal),  # Time-Domain
             f'Wavelet_Energy_CH{channel + 1}': wavelet_energy(channel_signal),  # Frequency-Domain
             f'Frequency_Variance_CH{channel + 1}': frequency_variance(channel_signal, fs),  # Frequency-Domain
-            f'Power_Spectrum_Ratio_CH{channel + 1}': power_spectrum_ratio(channel_signal, fs)  # Frequency-Domain
-        })
-    return features
+            f'Power_Spectrum_Ratio_CH{channel + 1}': power_spectrum_ratio(channel_signal, fs)  # Frequency-Domain"""
