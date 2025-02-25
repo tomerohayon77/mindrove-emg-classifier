@@ -7,9 +7,9 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_2.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_3.pkl"
 svm_model = joblib.load(model_path)
-num_points = 100
+check_every = 100
 memory_points = 1000
 gyro_threshold = 2000
 window_size = 200
@@ -51,12 +51,12 @@ def real_time_classify(shared_data):
                 emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
                 gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
-                time.sleep(3)  # Wait for the board to start streaming
+                time.sleep(3)
                 all_emg_data = np.empty((8,0))
 
                 print("start classifying")
                 while True:
-                    if board_shim.get_board_data_count() >= num_points:
+                    if board_shim.get_board_data_count() >= check_every:
                         new_data = board_shim.get_board_data()
                         emg_data = np.array(new_data[emg_channels])
                         all_emg_data = np.hstack((all_emg_data, emg_data))
@@ -76,9 +76,6 @@ def real_time_classify(shared_data):
                                 shared_data['move'] = 'left'
                             if movement != 0:
                                 shared_data['action'] = 1
-                                time.sleep(2)
-
-
 
 
             except Exception as e:
