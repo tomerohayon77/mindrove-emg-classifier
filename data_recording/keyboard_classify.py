@@ -1,9 +1,9 @@
-# classify.py
+# keyboard_classify.py
 import time
 from multiprocessing import Manager
 import keyboard  # For keyboard event detection
 
-def classify(shared_data):
+def keyboard_classify(shared_data):
     while True:
             event = keyboard.read_event()  # Waits for a keyboard event
             if event.event_type == keyboard.KEY_DOWN and shared_data['start'] == 1:  # Check if a key is pressed down
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
         from multiprocessing import Process
 
-        p = Process(target=classify, args=(shared_data,))
+        p = Process(target=keyboard_classify, args=(shared_data,))
         p.start()
 
         try:
