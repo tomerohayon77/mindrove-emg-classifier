@@ -104,17 +104,16 @@ def segment_emg_signals(emg_signals, labels,  window_size, overlap, fs):
 
 def normalize_signals(emg_signals):
     """
-    Normalize EMG signals using min-max normalization.
+    Normalize EMG signals using RMS normalization.
 
     Parameters:
     emg_signals (numpy.ndarray): The EMG signals to normalize.
 
     Returns:
-    numpy.ndarray: The normalized EMG signals.
+    numpy.ndarray: The RMS normalized EMG signals.
     """
-    min_val = np.min(emg_signals, axis=0, keepdims=True)
-    max_val = np.max(emg_signals, axis=0, keepdims=True)
-    normalized_signals = (emg_signals - min_val) / (max_val - min_val)
+    rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
+    normalized_signals = emg_signals / rms_value
     return normalized_signals
 
 def process_csv_file(file_path, fs=500):
@@ -141,15 +140,14 @@ def process_csv_file(file_path, fs=500):
     # Apply filters to EMG signals
     filtered_emg = apply_filters(emg_signals, fs)
 
-    # Normalize the EMG signals
-    normalized_emg = normalize_signals(filtered_emg)
     # Segment the normalized EMG signals into time windows
-    segmented_emg, segment_labels = split_by_label_streaks_data_labels_with_chunks(data_arr=normalized_emg, label_arr=labels)
+    segmented_emg, segment_labels = split_by_label_streaks_data_labels_with_chunks(data_arr=filtered_emg, label_arr=labels)
 
     # Extract features from each segment
     features_list = []
     for segment in segmented_emg:  # Iterate over each segment
-        features = extract_features(segment, fs)
+        normalized_segment = normalize_signals(segment) # Normalize the emg segment
+        features = extract_features(normalized_segment, fs)
         features_list.append(features)
 
     # Create a DataFrame with features and labels

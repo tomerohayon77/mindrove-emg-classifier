@@ -7,12 +7,12 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_1.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_2.pkl"
 #model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20
-gyro_threshold = 2000
+gyro_threshold = 2000 # used for decide if we are in rest mode or no
 
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
@@ -53,20 +53,19 @@ def real_time_classify_per_move(shared_data):
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
                 time.sleep(3)
                 move_data = np.empty((8,0))
-                flag_move = 0
+                flag_move = 0 # used for symbol whether we are in the middle of movement or not
                 print("start classifying")
                 while True:
-                    if board_shim.get_board_data_count() >= check_every:
+                    if board_shim.get_board_data_count() >= check_every: #check the new data every period of samples that we chose
                         new_data = board_shim.get_board_data()
                         emg_data = np.array(new_data[emg_channels])
                         gyro_data = np.array(new_data[gyro_channels])
 
-
-                        if np.any(np.abs(gyro_data) > gyro_threshold):
+                        if np.any(np.abs(gyro_data) > gyro_threshold):# if the gyro value is bigger than the threshold we chose , start saving the move's data
                             move_data = np.hstack((move_data, emg_data))
                             if flag_move == 0:
                                 flag_move = 1
-                        elif flag_move == 1:
+                        elif flag_move == 1:# if the gyro values is lower than the threshold we chose, if it is the end of a movement we will check the classify of this movement
                             movement = movement_from_model(move_data, sampling_rate)
                             print("the move is ", movement)
                             if movement == 1:

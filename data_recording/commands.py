@@ -44,17 +44,18 @@ def commands(shared_data):
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["right"]))
                             print("Sending RIGHT command")
 
-                        elif shared_data['move'].isdigit():
-                            await client.write_gatt_char(prt.TRIGGER_UUID, bytes([int(shared_data['move'])]))
-                            print("Sending trigger number ", int(shared_data['move']))
+                        # in the comments are trigger commands if we want to use them
+                        #elif shared_data['move'].isdigit():
+                         #   await client.write_gatt_char(prt.TRIGGER_UUID, bytes([int(shared_data['move'])]))
+                          #  print("Sending trigger number ", int(shared_data['move']))
 
-                        elif shared_data['move'] == 'a':
-                            await client.write_gatt_char(prt.TRIGGER_UUID, bytes([10]))
-                            print("Sending trigger number 10")
+                        #elif shared_data['move'] == 'a':
+                         #   await client.write_gatt_char(prt.TRIGGER_UUID, bytes([10]))
+                          #  print("Sending trigger number 10")
 
-                        elif shared_data['move'] == 'b':
-                            await client.write_gatt_char(prt.TRIGGER_UUID, bytes([11]))
-                            print("Sending trigger number 11")
+                        #elif shared_data['move'] == 'b':
+                         #   await client.write_gatt_char(prt.TRIGGER_UUID, bytes([11]))
+                          #  print("Sending trigger number 11")
 
                         else:
                             print("Invalid command", shared_data['move'])

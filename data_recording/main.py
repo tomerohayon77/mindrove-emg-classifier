@@ -8,10 +8,10 @@ import real_time_classify_per_move
 if __name__ == "__main__":
     with Manager() as manager:
         shared_data = manager.dict()
-        shared_data['move'] = 'NONE'  # Initialize shared variable
-        shared_data['action'] = 0  # Initialize shared variable
-        shared_data['start'] = 0  # Initialize shared variable
-        shared_data['connected'] = 0  # Initialize shared variable
+        shared_data['move'] = 'NONE'  # Initialize shared variable , what move we got?
+        shared_data['action'] = 0  # Initialize shared variable , did we just got a movement?
+        shared_data['start'] = 1  # Initialize shared variable , can we start classifying?
+        shared_data['connected'] = 0  # Initialize shared variable, are we connected to the armband?
 
 
         p1 = Process(target=keyboard_classify.keyboard_classify, args=(shared_data,))
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
         p1.start()
-        p2.start()
+        #p2.start()
         p3.start()
 
         try:
