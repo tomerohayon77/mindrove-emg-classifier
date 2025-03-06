@@ -4,7 +4,7 @@ import asyncio
 from bleak import BleakScanner, BleakClient
 import protocol as prt
 
-hand = "B8:D6:1A:43:60:52"
+hand = "B8:D6:1A:40:EF:D6"
 presets = [prt.PRESET0_UUID, prt.PRESET1_UUID, prt.PRESET2_UUID, prt.PRESET3_UUID, prt.PRESET4_UUID, prt.PRESET5_UUID, prt.PRESET6_UUID, prt.PRESET7_UUID
            , prt.PRESET8_UUID, prt.PRESET9_UUID, prt.PRESET10_UUID, prt.PRESET11_UUID]
 commands1 = prt.commands
