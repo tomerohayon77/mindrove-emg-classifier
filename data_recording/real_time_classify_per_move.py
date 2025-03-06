@@ -7,12 +7,12 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_1.pkl"
+#model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
+
 svm_model = joblib.load(model_path)
-check_every = 100
-memory_points = 1000
+check_every = 20
 gyro_threshold = 2000
-window_size = 200
 
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
@@ -37,7 +37,7 @@ def movement_from_model(emg_data,sampling_rate):
     return svm_model.predict(features_array)
 
 
-def real_time_classify(shared_data):
+def real_time_classify_per_move(shared_data):
     while True:
         if shared_data['connected'] == 1:
             BoardShim.enable_dev_board_logger()
@@ -52,19 +52,22 @@ def real_time_classify(shared_data):
                 gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
                 time.sleep(3)
-                all_emg_data = np.empty((8,0))
-
+                move_data = np.empty((8,0))
+                flag_move = 0
                 print("start classifying")
                 while True:
                     if board_shim.get_board_data_count() >= check_every:
                         new_data = board_shim.get_board_data()
                         emg_data = np.array(new_data[emg_channels])
-                        all_emg_data = np.hstack((all_emg_data, emg_data))
-                        all_emg_data = all_emg_data[:, -memory_points:]
                         gyro_data = np.array(new_data[gyro_channels])
 
-                        if np.any(np.abs(gyro_data) > gyro_threshold) and all_emg_data.shape[1] >= window_size:
-                            movement = movement_from_model(all_emg_data[:,-window_size:], sampling_rate)
+
+                        if np.any(np.abs(gyro_data) > gyro_threshold):
+                            move_data = np.hstack((move_data, emg_data))
+                            if flag_move == 0:
+                                flag_move = 1
+                        elif flag_move == 1:
+                            movement = movement_from_model(move_data, sampling_rate)
                             print("the move is ", movement)
                             if movement == 1:
                                 shared_data['move'] = 'open'
@@ -76,6 +79,8 @@ def real_time_classify(shared_data):
                                 shared_data['move'] = 'left'
                             if movement != 0:
                                 shared_data['action'] = 1
+                            move_data = np.empty((8, 0))
+                            flag_move = 0
 
 
             except Exception as e:
@@ -90,7 +95,7 @@ if __name__ == "__main__":
 
         from multiprocessing import Process
 
-        p = Process(target=real_time_classify, args=(shared_data,))
+        p = Process(target=real_time_classify_per_move, args=(shared_data,))
         p.start()
 
         try:

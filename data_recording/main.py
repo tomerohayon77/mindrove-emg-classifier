@@ -5,6 +5,8 @@ import keyboard_classify
 import commands
 import wi_fi
 import real_time_classify
+import real_time_classify_per_move
+
 if __name__ == "__main__":
     with Manager() as manager:
         shared_data = manager.dict()
@@ -15,9 +17,9 @@ if __name__ == "__main__":
 
         p1 = Process(target=wi_fi.wi_fi, args=(shared_data,))
         p2 = Process(target=keyboard_classify.keyboard_classify, args=(shared_data,))
-        p3 = Process(target=real_time_classify.real_time_classify, args=(shared_data,))
+        #p3 = Process(target=real_time_classify.real_time_classify, args=(shared_data,))
+        p3 = Process(target=real_time_classify_per_move.real_time_classify_per_move, args=(shared_data,))
         p4 = Process(target=commands.commands, args=(shared_data,))
-
 
         p1.start()
         p2.start()
