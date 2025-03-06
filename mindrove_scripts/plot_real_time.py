@@ -1,3 +1,6 @@
+#mindrove original script
+
+
 import logging
 
 import pyqtgraph as pg

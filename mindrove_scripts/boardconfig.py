@@ -1,3 +1,5 @@
+#mindrove original script
+
 import time
 import mindrove
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds, MindRoveError
