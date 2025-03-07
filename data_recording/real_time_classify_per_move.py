@@ -7,11 +7,11 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization.pkl_2"
 
 svm_model = joblib.load(model_path)
 check_every = 20
-gyro_threshold = 2000 # used for decide if we are in rest mode or no
+gyro_threshold = 2000# used for decide if we are in rest mode or no
 move_min_size = 40
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
@@ -25,9 +25,9 @@ def extracting_features(emg_data,sampling_rate):
     # Apply filters to EMG signals
     filtered_emg_data = apply_filters(emg_data, sampling_rate)
     # Normalize the EMG signals
-    normalized_emg = normalize_signals(filtered_emg_data)
+    #normalized_emg = normalize_signals(filtered_emg_data)
     # Extract features
-    return extract_features(normalized_emg, sampling_rate)
+    return extract_features(filtered_emg_data, sampling_rate)
 
 def movement_from_model(emg_data,sampling_rate):
     features_emg_data = extracting_features(emg_data,sampling_rate)

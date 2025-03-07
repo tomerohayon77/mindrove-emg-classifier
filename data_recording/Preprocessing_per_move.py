@@ -102,10 +102,18 @@ def segment_emg_signals(emg_signals, labels,  window_size, overlap, fs):
 
     return np.array(segmented_emg), np.array(segment_labels)
 
-def normalize_signals(emg_data):
-    min_val = np.min(emg_data, axis=0, keepdims=True)
-    max_val = np.max(emg_data, axis=0, keepdims=True)
-    normalized_signals = (emg_data - min_val) / (max_val - min_val)
+def normalize_signals(emg_signals):
+    """
+    Normalize EMG signals using RMS normalization.
+
+    Parameters:
+    emg_signals (numpy.ndarray): The EMG signals to normalize.
+
+    Returns:
+    numpy.ndarray: The RMS normalized EMG signals.
+    """
+    rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
+    normalized_signals = emg_signals / rms_value
     return normalized_signals
 def process_csv_file(file_path, fs=500):
     # Load the recorded data
@@ -137,8 +145,8 @@ def process_csv_file(file_path, fs=500):
     # Extract features from each segment
     features_list = []
     for segment in segmented_emg:  # Iterate over each segment
-        normalized_segment = normalize_signals(segment) # Normalize the emg segment
-        features = extract_features(normalized_segment, fs)
+        #normalized_segment = normalize_signals(segment) # Normalize the emg segment
+        features = extract_features(segment, fs)
         features_list.append(features)
 
     # Create a DataFrame with features and labels
@@ -162,4 +170,8 @@ def process_all_csv_files(directory):
                 process_csv_file(file_path)
 
 if __name__ == "__main__":
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\heni_olier_try2_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_31_1_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\roee_savion_9.1_labeled.csv')
     process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\shira_hazrati_try1_labeled.csv')

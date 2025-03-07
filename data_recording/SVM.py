@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_per_move_2.pkl'  # File path to save/load the model
+MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest.pkl_2'  # File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -28,18 +28,18 @@ def load_feature_files(directory):
 
 def regular_train_test_split(features_df):
     features_df = features_df[features_df['Label'] != 5]  # Drop rows with label 5
-    #features_df = features_df[features_df['Label'] != 0]  # Drop rows with label 0
-
+    features_df = features_df[features_df['Label'] != 0]  # Drop rows with label 0
+    '''''''''
     majority_class = features_df[features_df['Label'] == 0]
     minority_classes = features_df[features_df['Label'] != 0]
 
     sample_size = min(len(majority_class), len(minority_classes))  # Balance classes
     majority_class_undersampled = majority_class.sample(sample_size, random_state=42)
 
-    balanced_df = pd.concat([majority_class_undersampled, minority_classes])
+    balanced_df = pd.concat([majority_class_undersampled, minority_classes]) '''''''''
 
-    X = balanced_df.drop(columns=['Label', 'SessionID'])
-    y = balanced_df['Label']
+    X = features_df.drop(columns=['Label', 'SessionID'])
+    y = features_df['Label']
 
     imputer = SimpleImputer(strategy='mean')
     X = imputer.fit_transform(X)
@@ -52,8 +52,8 @@ def train_svm(X_train, X_test, y_train, y_test):
     svm_model.fit(X_train, y_train)
 
     # Save the trained model
-    #joblib.dump(svm_model, MODEL_PATH)
-    #print(f"Model saved to {MODEL_PATH}")
+    joblib.dump(svm_model, MODEL_PATH)
+    print(f"Model saved to {MODEL_PATH}")
 
     y_pred = svm_model.predict(X_test)
     print(classification_report(y_test, y_pred))
@@ -69,7 +69,7 @@ def train_svm(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    directory = r'C:\Technion\Project_A\Project_A\all_features_per_move'
+    directory = r'C:\Technion\Project_A\Project_A\features without normalization'
     features_df = load_feature_files(directory)
     X_train, X_test, y_train, y_test = regular_train_test_split(features_df)
     train_svm(X_train, X_test, y_train, y_test)
