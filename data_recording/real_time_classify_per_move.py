@@ -8,12 +8,11 @@ import time
 from multiprocessing import Manager
 
 model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest.pkl"
-#model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20
 gyro_threshold = 2000 # used for decide if we are in rest mode or no
-
+move_min_size = 50
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -67,7 +66,6 @@ def real_time_classify_per_move(shared_data):
                                 flag_move = 1
                         elif flag_move == 1:# if the gyro values is lower than the threshold we chose, if it is the end of a movement we will check the classify of this movement
                             movement = movement_from_model(move_data, sampling_rate)
-                            print("the move is ", movement)
                             if movement == 1:
                                 shared_data['move'] = 'open'
                             elif movement == 2:
@@ -76,7 +74,8 @@ def real_time_classify_per_move(shared_data):
                                 shared_data['move'] = 'right'
                             elif movement == 4:
                                 shared_data['move'] = 'left'
-                            if movement != 0:
+                            if movement != 0 and move_data.shape[0] > check_every:
+                                print("the move is ", movement)
                                 shared_data['action'] = 1
                             move_data = np.empty((8, 0))
                             flag_move = 0
