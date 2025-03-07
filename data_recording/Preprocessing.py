@@ -31,18 +31,10 @@ def segment_emg_signals(emg_signals, labels, session_id,  window_size, overlap, 
 
     return np.array(segmented_emg), np.array(segment_labels), session_id
 
-def normalize_signals(emg_signals):
-    """
-    Normalize EMG signals using RMS normalization.
-
-    Parameters:
-    emg_signals (numpy.ndarray): The EMG signals to normalize.
-
-    Returns:
-    numpy.ndarray: The RMS normalized EMG signals.
-    """
-    rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
-    normalized_signals = emg_signals / rms_value
+def normalize_signals(emg_data):
+    min_val = np.min(emg_data, axis=0, keepdims=True)
+    max_val = np.max(emg_data, axis=0, keepdims=True)
+    normalized_signals = (emg_data - min_val) / (max_val - min_val)
     return normalized_signals
 
 def average_reference(emg_signals):

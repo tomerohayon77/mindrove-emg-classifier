@@ -39,7 +39,7 @@ def movement_from_model(emg_data,sampling_rate):
 
 def real_time_classify_per_move(shared_data):
     while True:
-        if shared_data['start'] == 1:
+        if shared_data['connected'] == 1:
             BoardShim.enable_dev_board_logger()
             params = MindRoveInputParams()
             board_shim = BoardShim(BoardIds.MINDROVE_WIFI_BOARD, params)
