@@ -28,6 +28,7 @@ def load_feature_files(directory):
 
 def regular_train_test_split(features_df):
     features_df = features_df[features_df['Label'] != 5]  # Drop rows with label 5
+    #features_df = features_df[features_df['Label'] != 0]  # Drop rows with label 0
 
     majority_class = features_df[features_df['Label'] == 0]
     minority_classes = features_df[features_df['Label'] != 0]

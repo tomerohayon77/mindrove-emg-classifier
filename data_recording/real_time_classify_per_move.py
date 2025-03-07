@@ -7,7 +7,7 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_2.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest.pkl"
 #model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
 
 svm_model = joblib.load(model_path)
