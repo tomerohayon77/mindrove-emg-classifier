@@ -12,7 +12,7 @@ model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest
 svm_model = joblib.load(model_path)
 check_every = 20
 gyro_threshold = 2000 # used for decide if we are in rest mode or no
-move_min_size = 50
+move_min_size = 40
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -74,7 +74,7 @@ def real_time_classify_per_move(shared_data):
                                 shared_data['move'] = 'right'
                             elif movement == 4:
                                 shared_data['move'] = 'left'
-                            if movement != 0 and move_data.shape[0] > check_every:
+                            if move_data.shape[1] > move_min_size:
                                 print("the move is ", movement)
                                 shared_data['action'] = 1
                             move_data = np.empty((8, 0))
