@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest.pkl_2'  # File path to save/load the model
+MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization.pkl'  # File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -44,7 +44,7 @@ def regular_train_test_split(features_df):
     imputer = SimpleImputer(strategy='mean')
     X = imputer.fit_transform(X)
 
-    return train_test_split(X, y, test_size=0.3, random_state=42)
+    return train_test_split(X, y, test_size=0.15, random_state=42)
 
 
 def train_svm(X_train, X_test, y_train, y_test):
@@ -52,8 +52,8 @@ def train_svm(X_train, X_test, y_train, y_test):
     svm_model.fit(X_train, y_train)
 
     # Save the trained model
-    joblib.dump(svm_model, MODEL_PATH)
-    print(f"Model saved to {MODEL_PATH}")
+    #joblib.dump(svm_model, MODEL_PATH)
+    #print(f"Model saved to {MODEL_PATH}")
 
     y_pred = svm_model.predict(X_test)
     print(classification_report(y_test, y_pred))
