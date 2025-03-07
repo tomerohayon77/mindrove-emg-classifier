@@ -18,7 +18,7 @@ def wl_feature(emg_signal):
 
 def zc_feature(emg_signal, threshold=0):
     """Zero Crossing (ZC)"""
-    return np.sum(np.diff(np.sign(emg_signal)) != 0)
+    return (np.sum(np.diff(np.sign(emg_signal)) != 0))/emg_signal.shape[0]
 
 def ssc_feature(emg_signal, threshold=0):
     """Slope Sign Changes (SSC)"""

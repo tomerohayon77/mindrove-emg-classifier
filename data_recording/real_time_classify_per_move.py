@@ -7,13 +7,12 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_2.pkl"
-#model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20
 gyro_threshold = 2000 # used for decide if we are in rest mode or no
-
+move_min_size = 40
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -26,9 +25,9 @@ def extracting_features(emg_data,sampling_rate):
     # Apply filters to EMG signals
     filtered_emg_data = apply_filters(emg_data, sampling_rate)
     # Normalize the EMG signals
-    normalized_emg = normalize_signals(filtered_emg_data)
+    #normalized_emg = normalize_signals(filtered_emg_data)
     # Extract features
-    return extract_features(normalized_emg, sampling_rate)
+    return extract_features(filtered_emg_data, sampling_rate)
 
 def movement_from_model(emg_data,sampling_rate):
     features_emg_data = extracting_features(emg_data,sampling_rate)
@@ -67,7 +66,6 @@ def real_time_classify_per_move(shared_data):
                                 flag_move = 1
                         elif flag_move == 1:# if the gyro values is lower than the threshold we chose, if it is the end of a movement we will check the classify of this movement
                             movement = movement_from_model(move_data, sampling_rate)
-                            print("the move is ", movement)
                             if movement == 1:
                                 shared_data['move'] = 'open'
                             elif movement == 2:
@@ -76,7 +74,8 @@ def real_time_classify_per_move(shared_data):
                                 shared_data['move'] = 'right'
                             elif movement == 4:
                                 shared_data['move'] = 'left'
-                            if movement != 0:
+                            if move_data.shape[1] > move_min_size:
+                                print("the move is ", movement)
                                 shared_data['action'] = 1
                             move_data = np.empty((8, 0))
                             flag_move = 0

@@ -115,7 +115,6 @@ def normalize_signals(emg_signals):
     rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
     normalized_signals = emg_signals / rms_value
     return normalized_signals
-
 def process_csv_file(file_path, fs=500):
     # Load the recorded data
     df = pd.read_csv(file_path)
@@ -146,8 +145,8 @@ def process_csv_file(file_path, fs=500):
     # Extract features from each segment
     features_list = []
     for segment in segmented_emg:  # Iterate over each segment
-        normalized_segment = normalize_signals(segment) # Normalize the emg segment
-        features = extract_features(normalized_segment, fs)
+        #normalized_segment = normalize_signals(segment) # Normalize the emg segment
+        features = extract_features(segment, fs)
         features_list.append(features)
 
     # Create a DataFrame with features and labels
@@ -171,5 +170,8 @@ def process_all_csv_files(directory):
                 process_csv_file(file_path)
 
 if __name__ == "__main__":
-    #process_all_csv_files(r'C:\Users\User\PycharmProjects\Project_A\Paitient_records_for_features')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\heni_olier_try2_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_31_1_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\roee_savion_9.1_labeled.csv')
     process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\shira_hazrati_try1_labeled.csv')
