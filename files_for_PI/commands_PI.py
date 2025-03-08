@@ -10,7 +10,7 @@ presets = [prt.PRESET0_UUID, prt.PRESET1_UUID, prt.PRESET2_UUID, prt.PRESET3_UUI
 commands1 = prt.commands
 
 import protocol as prt
-def commands(shared_data):
+def commands_PI(shared_data):
     async def run():
         try:
             async with BleakClient(hand) as client:
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
         from multiprocessing import Process
 
-        p = Process(target=commands, args=(shared_data,))
+        p = Process(target=commands_PI, args=(shared_data,))
         p.start()
 
         try:

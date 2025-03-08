@@ -1,9 +1,10 @@
 # main_PI.py
 from multiprocessing import Process, Manager
 import time
-import keyboard_classify
-import commands
-import real_time_classify_per_move
+import keyboard_classify_PI
+import commands_PI
+import real_time_classify_per_move_PI
+import wifi_connect_PI
 import wifi_connect_windows
 
 if __name__ == "__main__":
@@ -14,11 +15,11 @@ if __name__ == "__main__":
         shared_data['start'] = 0  # Initialize shared variable , can we start classifying?
         shared_data['connected'] = 0  # Initialize shared variable, are we connected to the armband?
 
+        #p1 = Process(target=wifi_connect_PI.wifi_connect_PI, args=(shared_data,))
         p1 = Process(target=wifi_connect_windows.wifi_connect_windows, args=(shared_data,))
-        p2 = Process(target=keyboard_classify.keyboard_classify, args=(shared_data,))
-        p3 = Process(target=commands.commands, args=(shared_data,))
-        p4 = Process(target=real_time_classify_per_move.real_time_classify_per_move, args=(shared_data,))
-
+        p2 = Process(target=keyboard_classify_PI.keyboard_classify_PI, args=(shared_data,))
+        p3 = Process(target=commands_PI.commands_PI, args=(shared_data,))
+        p4 = Process(target=real_time_classify_per_move_PI.real_time_classify_per_move_PI, args=(shared_data,))
 
         p1.start()
         p2.start()
