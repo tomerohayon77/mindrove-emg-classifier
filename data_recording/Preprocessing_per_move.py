@@ -171,7 +171,7 @@ def process_all_csv_files(directory):
 
 if __name__ == "__main__":
     process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\heni_olier_try2_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_31_1_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
+    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\ilay_savion_labeld.csv')
     process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\roee_savion_9.1_labeled.csv')
     process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\shira_hazrati_try1_labeled.csv')
+

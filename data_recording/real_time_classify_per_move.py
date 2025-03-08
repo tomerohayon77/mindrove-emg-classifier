@@ -7,12 +7,12 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization_2.pkl"
 
 svm_model = joblib.load(model_path)
-check_every = 20
+check_every = 20 #number of samples
 gyro_threshold = 2000 # used for decide if we are in rest mode or no
-move_min_size = 40
+move_min_size = 40 # in samples
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array

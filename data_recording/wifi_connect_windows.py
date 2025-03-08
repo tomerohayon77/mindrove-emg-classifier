@@ -37,7 +37,6 @@ def wifi_connect_windows(shared_data):
                 print("Failed to connect.")
                 shared_data['connected'] = 0
         else:
-            print(f"Already connected to {SSID}")
             shared_data['connected'] = 1
         time.sleep(10)  # Check every 10 seconds
 
