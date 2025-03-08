@@ -22,7 +22,7 @@ def zc_feature(emg_signal, threshold=0):
 
 def ssc_feature(emg_signal, threshold=0):
     """Slope Sign Changes (SSC)"""
-    return np.sum(np.diff(np.sign(np.diff(emg_signal))) != 0)
+    return np.sum(np.diff(np.sign(np.diff(emg_signal))) != 0)/emg_signal.shape[0]
 
 def willison_amplitude(signal, threshold=0.01):
     """Calculate Willison Amplitude (WAMP) of an EMG signal with a threshold."""
