@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization_@.pkl'  # File path to save/load the model
+MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\mmodel_for_all.pkl'  # File path to save/load the model
 
 
 def load_feature_files(directory):

@@ -7,7 +7,7 @@ from feature_extraction_PI import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\files_for_PI\svm_model_per_move_no_rest_no_normalization_2.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model_2.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20 #number of samples
@@ -46,7 +46,6 @@ def real_time_classify_per_move_PI(shared_data):
                 # Prepare session
                 board_shim.prepare_session()
                 board_shim.start_stream()
-                print("start streaming")
                 emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
                 gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
