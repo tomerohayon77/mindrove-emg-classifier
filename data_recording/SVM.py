@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\liad_personal_model_3.pkl'  # File path to save/load the model
+MODEL_PATH = 'C:\Technion\Project_A\Project_A\models\liad_personal_model_with_rest_no_balance.pkl'  # File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -28,15 +28,15 @@ def load_feature_files(directory):
 
 def regular_train_test_split(features_df):
     features_df = features_df[features_df['Label'] != 5]  # Drop rows with label 5
-    features_df = features_df[features_df['Label'] != 0]  # Drop rows with label 0
-    '''''''''
+    #features_df = features_df[features_df['Label'] != 0]  # Drop rows with label 0
+
     majority_class = features_df[features_df['Label'] == 0]
     minority_classes = features_df[features_df['Label'] != 0]
 
     sample_size = min(len(majority_class), len(minority_classes))  # Balance classes
     majority_class_undersampled = majority_class.sample(sample_size, random_state=42)
 
-    balanced_df = pd.concat([majority_class_undersampled, minority_classes]) '''''''''
+    balanced_df = pd.concat([majority_class_undersampled, minority_classes])
 
     X = features_df.drop(columns=['Label', 'SessionID'])
     y = features_df['Label']
