@@ -14,7 +14,7 @@ def rms_feature(emg_signal):
 
 def wl_feature(emg_signal):
     """Waveform Length (WL)"""
-    return np.sum(np.abs(np.diff(emg_signal)))
+    return np.sum(np.abs(np.diff(emg_signal)))/emg_signal.shape[0]
 
 def zc_feature(emg_signal, threshold=0):
     """Zero Crossing (ZC)"""

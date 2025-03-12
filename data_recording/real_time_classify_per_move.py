@@ -7,7 +7,7 @@ from new_feature_extraction import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_per_move_no_rest_no_normalization_2.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model_3.pkl.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20 #number of samples

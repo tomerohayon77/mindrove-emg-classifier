@@ -16,7 +16,7 @@ def commands(shared_data):
             async with BleakClient(hand) as client:
                 print("Connected to ", hand)
                 await asyncio.sleep(3)
-                print("You may start")
+                print("You may start sending commands")
                 shared_data['start'] = 1
                 while True:
                     if shared_data['action'] == 1:

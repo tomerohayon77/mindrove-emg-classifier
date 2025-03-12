@@ -4,7 +4,6 @@ import time
 import keyboard_classify_PI
 import commands_PI
 import real_time_classify_per_move_PI
-import wifi_connect_PI
 import wifi_connect_windows
 
 if __name__ == "__main__":
