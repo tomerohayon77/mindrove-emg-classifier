@@ -1,0 +1,5 @@
+During the project, we worked with version 3.0.0 of the MindRove library, but newer and more updated versions are now available.
+
+When using version 5.0.0 and above, the units of measurement for GYRO and EMG values differ from previous versions, which may cause data mismatches requiring multiplication by constants.
+
+Please refer to the following link for more information: https://docs.mindrove.com/main/DataFormatDesc.html.
