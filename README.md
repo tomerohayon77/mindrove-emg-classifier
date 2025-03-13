@@ -11,7 +11,6 @@ This project focuses on developing a classifier for Electromyography (EMG) signa
 - [Model Training](#model-training)
 - [Evaluation](#evaluation)
 - [Contributing](#contributing)
-- [License](#license)
 - [Contact](#contact)
 
 ## Installation
