@@ -104,8 +104,9 @@ For questions or collaboration:
 - **Email:** [Liad.Olier@campus.technion.ac.il](mailto:your.email@example.com)
 - **GitHub:** [liadolier99](https://github.com/liadolier99)
 
-- **Name:** Roee Savion@
+- **Name:** Roee Savion
 - **Email:** [roee.savion@campus.technion.ac.il](mailto:your.email@example.com)
+- **GitHub:** [roeesavion](https://github.com/roeesavion)
 
 ---
 
