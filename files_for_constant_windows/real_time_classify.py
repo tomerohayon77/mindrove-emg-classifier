@@ -1,18 +1,19 @@
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
-from new_filtering import apply_filters
+from filtering_per_window import apply_filters
 from sklearn.svm import SVC
 import joblib
 import numpy as np
-from new_feature_extraction import extract_features
+from feature_extraction_per_window import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model_3.pkl.pkl"
-
+model_path = r"C:\Technion\Project_A\Project_A\models\svm_model_4.pkl"
 svm_model = joblib.load(model_path)
-check_every = 20 #number of samples
-gyro_threshold = 2000 # used for decide if we are in rest mode or no
-move_min_size = 40 # in samples
+check_every = 100
+memory_points = 1000
+gyro_threshold = 2000
+window_size = 200
+
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -25,9 +26,9 @@ def extracting_features(emg_data,sampling_rate):
     # Apply filters to EMG signals
     filtered_emg_data = apply_filters(emg_data, sampling_rate)
     # Normalize the EMG signals
-    #normalized_emg = normalize_signals(filtered_emg_data)
+    normalized_emg = normalize_signals(filtered_emg_data)
     # Extract features
-    return extract_features(filtered_emg_data, sampling_rate)
+    return extract_features(normalized_emg, sampling_rate)
 
 def movement_from_model(emg_data,sampling_rate):
     features_emg_data = extracting_features(emg_data,sampling_rate)
@@ -36,7 +37,7 @@ def movement_from_model(emg_data,sampling_rate):
     return svm_model.predict(features_array)
 
 
-def real_time_classify_per_move(shared_data):
+def real_time_classify(shared_data):
     while True:
         if shared_data['connected'] == 1:
             BoardShim.enable_dev_board_logger()
@@ -51,21 +52,20 @@ def real_time_classify_per_move(shared_data):
                 gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
                 time.sleep(3)
-                move_data = np.empty((8,0))
-                flag_move = 0 # used for symbol whether we are in the middle of movement or not
+                all_emg_data = np.empty((8,0))
+
                 print("start classifying")
                 while True:
-                    if board_shim.get_board_data_count() >= check_every: #check the new data every period of samples that we chose
+                    if board_shim.get_board_data_count() >= check_every:
                         new_data = board_shim.get_board_data()
                         emg_data = np.array(new_data[emg_channels])
+                        all_emg_data = np.hstack((all_emg_data, emg_data))
+                        all_emg_data = all_emg_data[:, -memory_points:]
                         gyro_data = np.array(new_data[gyro_channels])
 
-                        if np.any(np.abs(gyro_data) > gyro_threshold):# if the gyro value is bigger than the threshold we chose , start saving the move's data
-                            move_data = np.hstack((move_data, emg_data))
-                            if flag_move == 0:
-                                flag_move = 1
-                        elif flag_move == 1:# if the gyro values is lower than the threshold we chose, if it is the end of a movement we will check the classify of this movement
-                            movement = movement_from_model(move_data, sampling_rate)
+                        if np.any(np.abs(gyro_data) > gyro_threshold) and all_emg_data.shape[1] >= window_size:
+                            movement = movement_from_model(all_emg_data[:,-window_size:], sampling_rate)
+                            print("the move is ", movement)
                             if movement == 1:
                                 shared_data['move'] = 'open'
                             elif movement == 2:
@@ -74,11 +74,8 @@ def real_time_classify_per_move(shared_data):
                                 shared_data['move'] = 'right'
                             elif movement == 4:
                                 shared_data['move'] = 'left'
-                            if move_data.shape[1] > move_min_size:
-                                print("the move is ", movement)
+                            if movement != 0:
                                 shared_data['action'] = 1
-                            move_data = np.empty((8, 0))
-                            flag_move = 0
 
 
             except Exception as e:
@@ -93,7 +90,7 @@ if __name__ == "__main__":
 
         from multiprocessing import Process
 
-        p = Process(target=real_time_classify_per_move, args=(shared_data,))
+        p = Process(target=real_time_classify, args=(shared_data,))
         p.start()
 
         try:

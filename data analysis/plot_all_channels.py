@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 
-from data_recording.Preprocessing import average_reference
 from feature_extraction import extract_features
-import seaborn as sns
-from Preprocessing import average_reference
+from files_for_constant_windows.Preprocessing import average_reference
 
 from FIltering import apply_filters
 

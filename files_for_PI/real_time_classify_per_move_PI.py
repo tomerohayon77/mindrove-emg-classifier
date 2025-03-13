@@ -7,11 +7,11 @@ from feature_extraction_PI import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model_2.pkl"
+model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model_3.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20 #number of samples
-gyro_threshold = 2000 # used for decide if we are in rest mode or no
+gyro_threshold = 1500 # used for decide if we are in rest mode or no
 move_min_size = 40 # in samples
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)

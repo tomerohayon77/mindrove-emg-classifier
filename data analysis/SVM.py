@@ -69,7 +69,7 @@ def train_svm(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    directory = r'C:\Technion\Project_A\Project_A\liad_personal_recordings_no_normalization'
+    directory = r'C:\Technion\Project_A\Project_A\liad_personal_features'
     features_df = load_feature_files(directory)
     X_train, X_test, y_train, y_test = regular_train_test_split(features_df)
     train_svm(X_train, X_test, y_train, y_test)
