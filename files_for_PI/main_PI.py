@@ -7,14 +7,13 @@ import real_time_classify_per_move_PI
 import wifi_connect_windows
 
 if __name__ == "__main__":
-    with Manager() as manager:
+    with Manager() as manager:aq
         shared_data = manager.dict()
         shared_data['move'] = 'NONE'  # Initialize shared variable , what move we got?
         shared_data['action'] = 0  # Initialize shared variable , did we just got a movement?
         shared_data['start'] = 0  # Initialize shared variable , can we start classifying?
         shared_data['connected'] = 0  # Initialize shared variable, are we connected to the armband?
 
-        #p1 = Process(target=wifi_connect_PI.wifi_connect_PI, args=(shared_data,))
         p1 = Process(target=wifi_connect_windows.wifi_connect_windows, args=(shared_data,))
         p2 = Process(target=keyboard_classify_PI.keyboard_classify_PI, args=(shared_data,))
         p3 = Process(target=commands_PI.commands_PI, args=(shared_data,))
