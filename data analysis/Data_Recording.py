@@ -5,7 +5,7 @@ import threading
 import cv2
 from datetime import datetime
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
-
+#sdv
 # Updated recording protocol with consistent labels for variations
 PROTOCOL = [
     ("Rest", 10, 0),
