@@ -170,10 +170,12 @@ def process_all_csv_files(directory):
                 process_csv_file(file_path)
 
 if __name__ == "__main__":
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_1_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_3_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_5_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_6_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
-    process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_31_1_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_1_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_3_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_5_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_personal_6_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\new_liad_olier_labeled.csv')
+    # process_csv_file(r'C:\Technion\Project_A\Project_A\Paitient_records_for_features\liad_olier_31_1_labeled.csv')
+     process_csv_file(r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
+
 

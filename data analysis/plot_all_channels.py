@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from feature_extraction import extract_features
 from files_for_constant_windows.Preprocessing import average_reference
@@ -72,7 +74,7 @@ def extract_windowed_features(emg_signals, window_size, fs):
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
     #data = pd.read_csv(r'Record/recorded_data.csv')
-    data = pd.read_csv(r'C:\Users\User\PycharmProjects\Project_A\Patient_Records\Roee_Savion_9.1\Roee_Savion_9.1_20250109_180436.csv')
+    data = pd.read_csv(r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
     print(data.columns)
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
