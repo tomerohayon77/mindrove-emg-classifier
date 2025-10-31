@@ -74,7 +74,7 @@ def extract_windowed_features(emg_signals, window_size, fs):
 if __name__ == "__main__":
     fs = 500  # Sampling frequency in Hz
     #data = pd.read_csv(r'Record/recorded_data.csv')
-    data = pd.read_csv(r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
+    data = pd.read_csv(r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
     print(data.columns)
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)

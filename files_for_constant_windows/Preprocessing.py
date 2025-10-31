@@ -155,7 +155,5 @@ def process_all_csv_files(directory):
 
 if __name__ == "__main__":
     process_csv_file(
-        r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv',
-        fs=500
-    )
+        r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\Patient_Records\Tomer_TEST_RUN_2\Tomer_TEST_RUN_2_20251031_222854.csv', fs=500)
 

@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\SVM_RESULTS\svm_model_tomer.pkl' #File path to save/load the model
+MODEL_PATH = r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\SVM_models\svm_model_tomer.pkl' #File path to save/load the model
 
 
 def load_feature_files(directory):
@@ -69,7 +69,7 @@ def train_svm(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    directory = r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\feature_results_tomer'
+    directory = r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\all_features'
     features_df = load_feature_files(directory)
     X_train, X_test, y_train, y_test = regular_train_test_split(features_df)
     train_svm(X_train, X_test, y_train, y_test)

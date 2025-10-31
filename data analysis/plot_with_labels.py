@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     indexes = np.linspace(x,x+1499,1500).astype(int)
 
-    data = pd.read_csv(r'C:\Users\Lenovo\Desktop\project_yad\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
+    data = pd.read_csv(r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv')
 
     # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
     channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8', 'AccX', 'AccY', 'AccZ', 'GyX', 'GyY', 'GyZ']
