@@ -1,177 +1,161 @@
+# preprocessing_per_move.py
 import os
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from FIltering import apply_filters
 from feature_extraction import extract_features
-#
 
+
+# ---------- Repo-root discovery ----------
+def _find_repo_root(start: Path) -> Path:
+    start = start.resolve()
+    for p in [start, *start.parents]:
+        if (p / "Patient_Records").is_dir():
+            return p
+        if (p / ".git").exists():
+            return p
+    return start.parents[1]
+
+
+REPO_ROOT = _find_repo_root(Path(__file__))
+PATIENT_DIR = REPO_ROOT / "Patient_Records"
+OUTPUT_DIR = REPO_ROOT / "Processed_Patient_Records_Per_Move"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ---------- Utilities ----------
 def split_by_label_streaks_data_labels_with_chunks(data_arr, label_arr, chunk_size=200):
     """
-    Splits the data and label arrays into segments based on consecutive streaks of the same label value.
-    If the label is 0, it further splits the data segment into chunks of 200 samples, ensuring no chunk has less than 200 samples (unless it's the last segment).
-
-    Parameters:
-    data_arr (numpy.ndarray): The input data array.
-    label_arr (numpy.ndarray): The input label array.
-    chunk_size (int): The size of chunks to split label 0 segments into.
-
-    Returns:
-    tuple: A tuple containing two lists:
-        - The first list is a list of data segments (numpy arrays).
-        - The second list is a list of labels, where each label corresponds to a segment.
+    Split into segments by consecutive identical labels.
+    Label==0 segments are split to fixed chunks (chunk_size) with tail merged into the last chunk.
+    data_arr shape: [N, n_ch] or [N] per-sample records.
     """
     data_segments = []
-    segment_labels = []  # Will hold one label for each segment
-    current_data_segment = []
+    segment_labels = []
+    current = []
     current_label = None
 
-    # Iterate through the arrays
     for i in range(len(data_arr)):
-        if not current_data_segment:  # Start a new segment if the current one is empty
-            current_data_segment.append(data_arr[i])
-            current_label = label_arr[i]  # Set the label for the new segment
+        if not current:
+            current.append(data_arr[i])
+            current_label = label_arr[i]
         else:
-            # Check if the label is the same as the last one in the segment
             if label_arr[i] == current_label:
-                current_data_segment.append(data_arr[i])  # Continue the streak for data
+                current.append(data_arr[i])
             else:
-                # If the label changes, save the current segment and start a new one
-                data_segments.append(np.array(current_data_segment))  # Convert to numpy array
-                segment_labels.append(current_label)  # Store the label for the current segment
-                current_data_segment = [data_arr[i]]  # Start a new data segment
-                current_label = label_arr[i]  # Set the new label
+                data_segments.append(np.array(current))
+                segment_labels.append(current_label)
+                current = [data_arr[i]]
+                current_label = label_arr[i]
 
-    # Add the last segment
-    if current_data_segment:
-        data_segments.append(np.array(current_data_segment))
+    if current:
+        data_segments.append(np.array(current))
         segment_labels.append(current_label)
 
-    # Now handle splitting label 0 segments into chunks of 200 samples
     final_data_segments = []
     final_label_segments = []
 
-    for i, data_segment in enumerate(data_segments):
-        label = segment_labels[i]
-        if label == 0:
-            # Split the data segment into chunks of 200 samples
-            while len(data_segment) >= chunk_size:
-                final_data_segments.append(data_segment[:chunk_size])
-                final_label_segments.append(label)  # The label for these chunks is 0
-                data_segment = data_segment[chunk_size:]  # Remove the chunk from the original segment
-
-            # If there are fewer than chunk_size samples left, merge it with the last chunk
-            if len(data_segment) > 0:
+    for seg, lbl in zip(data_segments, segment_labels):
+        if lbl == 0:
+            # chunk into fixed windows
+            while len(seg) >= chunk_size:
+                final_data_segments.append(seg[:chunk_size])
+                final_label_segments.append(lbl)
+                seg = seg[chunk_size:]
+            # merge remainder into the last chunk
+            if len(seg) > 0:
                 if final_data_segments:
-                    final_data_segments[-1] = np.concatenate([final_data_segments[-1], data_segment])
-                    final_label_segments[-1] = label  # The last chunk gets label 0
+                    final_data_segments[-1] = np.concatenate([final_data_segments[-1], seg])
                 else:
-                    final_data_segments.append(data_segment)
-                    final_label_segments.append(label)
+                    final_data_segments.append(seg)
+                final_label_segments.append(lbl) if not final_label_segments else None
         else:
-            # For segments with label != 0, just add them as they are
-            final_data_segments.append(data_segment)
-            final_label_segments.append(label)
+            final_data_segments.append(seg)
+            final_label_segments.append(lbl)
 
-    return final_data_segments, np.array(final_label_segments)  # Return labels as a numpy array
+    return final_data_segments, np.array(final_label_segments)
 
 
-def segment_emg_signals(emg_signals, labels,  window_size, overlap, fs):
-    """
-    Segment EMG signals into time windows.
-
-    Parameters:
-    emg_signals (numpy.ndarray): The normalized EMG signals.
-    labels (numpy.ndarray): The labels of the EMG signals data.
-    window_size (int): The size of the window in milliseconds. Should be between 200 and 500 ms.
-    overlap (float): The overlap between windows as a percentage (0 to 1).
-    fs (int): The sampling frequency.
-
-    Returns:
-    numpy.ndarray: An array of segmented EMG signals.
-    numpy.ndarray: An array of segment labels.
-    """
+def segment_emg_signals(emg_signals, labels, window_size, overlap, fs):
     num_samples_per_window = round(int(window_size * (fs / 1000)))
     segmented_emg = []
     segment_labels = []
-    step_size = num_samples_per_window *(1 - overlap)
-    for start in range(0, len(emg_signals) - num_samples_per_window, int(step_size)):
+    step_size = max(1, int(num_samples_per_window * (1 - overlap)))
+    for start in range(0, len(emg_signals) - num_samples_per_window, step_size):
         segment = emg_signals[start:start + num_samples_per_window]
         segmented_emg.append(segment)
-        mid_point = start + window_size // 2
+        mid_point = start + num_samples_per_window // 2
         segment_labels.append(labels[mid_point])
-
     return np.array(segmented_emg), np.array(segment_labels)
 
+
 def normalize_signals(emg_signals):
-    """
-    Normalize EMG signals using RMS normalization.
-
-    Parameters:
-    emg_signals (numpy.ndarray): The EMG signals to normalize.
-
-    Returns:
-    numpy.ndarray: The RMS normalized EMG signals.
-    """
     rms_value = np.sqrt(np.mean(emg_signals ** 2, axis=0, keepdims=True))
-    normalized_signals = emg_signals / rms_value
-    return normalized_signals
+    rms_value[rms_value == 0] = 1.0
+    return emg_signals / rms_value
+
+
+# ---------- Core ----------
 def process_csv_file(file_path, fs=500):
-    # Load the recorded data
     df = pd.read_csv(file_path)
 
-    # Extract EMG, Gyroscope, and Accelerometer signals
-    emg_signals = df[[f'CH{i+1}' for i in range(8)]].values
-    labels = df['Label'].values
-    session_id = df['SessionID'].values
+    # EMG columns (supports CH1..CH8; extend if needed)
+    emg_cols = [f'CH{i+1}' for i in range(8)]
+    if not set(emg_cols).issubset(df.columns):
+        raise ValueError(f"Missing EMG columns in {file_path}. Columns: {list(df.columns)}")
 
-    # Identify the columns representing EMG channels (e.g., CH1, CH2, ...)
-    channels = ['CH1', 'CH2', 'CH3', 'CH4', 'CH5', 'CH6', 'CH7', 'CH8']
+    # Labels / SessionID
+    labels = df['Label'].values if 'Label' in df.columns else np.zeros(len(df), dtype=int)
+    session_id = df['SessionID'].values if 'SessionID' in df.columns else np.arange(len(df))
 
-    # Replace zeros with NaN
-    df[channels] = df[channels].replace(0, np.nan)
+    # Clean EMG in DataFrame (zeros->NaN->interpolate->bfill)
+    df[emg_cols] = df[emg_cols].replace(0, np.nan)
+    df[emg_cols] = df[emg_cols].interpolate(method='linear', axis=0)
+    df[emg_cols] = df[emg_cols].bfill()
 
-    # Interpolate missing values (linear interpolation)
-    df[channels] = df[channels].interpolate(method='linear', axis=0)
+    # IMPORTANT: refresh after cleaning
+    emg_signals = df[emg_cols].values  # shape [N, 8]
 
-    # Forward-fill remaining NaNs (if at the start of the data)
-    df[channels] = df[channels].bfill()
-
-    # Apply filters to EMG signals
+    # Filter
     filtered_emg = apply_filters(emg_signals, fs)
 
-    # Segment the normalized EMG signals into time windows
-    segmented_emg, segment_labels = split_by_label_streaks_data_labels_with_chunks(data_arr=filtered_emg, label_arr=labels)
+    # Split into segments per label streaks (with chunking for label 0)
+    segmented_emg, segment_labels = split_by_label_streaks_data_labels_with_chunks(
+        data_arr=filtered_emg, label_arr=labels
+    )
 
-    # Extract features from each segment
+    # Feature extraction
     features_list = []
-    for segment in segmented_emg:  # Iterate over each segment
-        #normalized_segment = normalize_signals(segment) # Normalize the emg segment
-        features = extract_features(segment, fs)
-        features_list.append(features)
+    for seg in segmented_emg:
+        feats = extract_features(seg, fs)  # expects dict-like
+        features_list.append(feats)
 
-    # Create a DataFrame with features and labels
     features_df = pd.DataFrame(features_list)
     features_df['Label'] = segment_labels
     features_df['SessionID'] = session_id[:len(segment_labels)]
 
-    # Save the DataFrame to a CSV file
-    output_file = os.path.join(os.path.dirname(file_path), f"features_per_move_{os.path.basename(file_path)}")
-    features_df.to_csv(output_file, index=False)
+    # Save to repo-level folder
+    out_path = OUTPUT_DIR / f"features_per_move_{os.path.basename(file_path)}"
+    print("Saving to:", out_path)
+    features_df.to_csv(out_path, index=False)
+    print(f"[saved] {out_path}")
 
-def process_all_csv_files(directory):
-    if not os.path.exists('Processed_Patient_Records'):
-        os.makedirs('Processed_Patient_Records')
 
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith('.csv'):
-                file_path = os.path.join(root, file)
-                print(f"Processing {file_path}")
-                process_csv_file(file_path)
+def process_all_csv_files(patient_dir: Path):
+    """Recursively process all CSVs under Patient_Records/."""
+    if not patient_dir.is_dir():
+        raise FileNotFoundError(f"Patient_Records not found at: {patient_dir}")
+    for csv_path in patient_dir.rglob("*.csv"):
+        if csv_path.name.startswith("features_per_move_"):
+            continue
+        print(f"Processing {csv_path}")
+        process_csv_file(str(csv_path))
 
+
+# ---------- Entry point ----------
 if __name__ == "__main__":
-     process_csv_file(r"C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\Patient_Records\Tomer_TEST_RUN\Tomer_TEST_RUN_20251031_150942.csv")
-
-     process_csv_file(r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\Patient_Records\Tomer_TEST_RUN_2\Tomer_TEST_RUN_2_20251031_222854.csv')
-
-
+    print(f"[repo_root] {REPO_ROOT}")
+    print(f"[input_dir] {PATIENT_DIR}")
+    print(f"[output_dir] {OUTPUT_DIR}")
+    process_all_csv_files(PATIENT_DIR)

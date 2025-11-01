@@ -9,14 +9,14 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-MODEL_PATH = r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\SVM_models\svm_model_tomer.pkl' #File path to save/load the model
+MODEL_PATH = r'/home/raspi5/mindrove-emg-classifier/SVM_models/svm_model_guy.pkl' #File path to save/load the model
 
 
 def load_feature_files(directory):
     all_features = []
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file.startswith('features_') and file.endswith('.csv'):
+            if file.startswith('features') and file.endswith('.csv'):
                 file_path = os.path.join(root, file)
                 print(f"Reading file: {file_path}")  # Debugging line
                 df = pd.read_csv(file_path)
@@ -69,7 +69,7 @@ def train_svm(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    directory = r'C:\Users\Lenovo\Desktop\project_yad\Mindrove_armband_EMG_classifier\all_features'
+    directory = r'/home/raspi5/mindrove-emg-classifier/Processed_Patient_Records'
     features_df = load_feature_files(directory)
     X_train, X_test, y_train, y_test = regular_train_test_split(features_df)
     train_svm(X_train, X_test, y_train, y_test)

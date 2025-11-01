@@ -7,34 +7,147 @@ from datetime import datetime
 from mindrove.board_shim import BoardShim, MindRoveInputParams, BoardIds
 #sdv
 # Updated recording protocol with consistent labels for variations
-PROTOCOL = [
-    ("Rest", 10, 0),
-    ("Close ", 3, 0),
-    ("Open ", 3, 0),
-    ("Close", 3, 0),
-    ("Open", 3, 0),
-    ("Close", 3, 0),
-    ("Open", 3, 0),
-    ("Close ", 3, 0),
-    ("Open ", 3, 0),
-    ("Close", 3, 0),
-    ("Open", 3, 0),
-    ("Close", 3, 0),
-    ("Open", 3, 0),
-    ("Right", 3, 0),
-    ("Left", 3, 0),
-    ("Right", 3, 0),
-    ("Left", 3, 0),
-    ("Right ", 3, 0),
-    ("Left ", 3, 0),
-    ("Right", 3, 0),
-    ("Left", 3, 0),
-    ("Right", 3, 0),
-    ("Left", 3, 0),
-    ("Right ", 3, 0),
-    ("Left ", 3, 0),
-    ("Rest", 10, 0),
+PROTOCOL1 = [
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Close', 2.5, 1),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
 ]
+PROTOCOL2 = [
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Left', 2.5, 4),
+ ('Close', 2.5, 1),
+ ('Open', 2.5, 2),
+ ('Right', 2.5, 3),
+ ('Left', 2.5, 4),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Left', 2.5, 4),
+ ('Close', 2.5, 1),
+ ('Open', 2.5, 2),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+]
+PROTOCOL3 = [
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Close', 2.5, 1),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Open', 2.5, 2),
+ ('Right', 2.5, 3),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+]
+PROTOCOL4 = [
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Left', 2.5, 4),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Right', 2.5, 3),
+ ('Close', 2.5, 1),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Close', 2.5, 1),
+ ('Right', 2.5, 3),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Right', 2.5, 3),
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+]
+PROTOCOL5 = [
+ ('Rest', 4, 0),
+ ('Left', 2.5, 4),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Open', 2.5, 2),
+ ('Right', 2.5, 3),
+ ('Close', 2.5, 1),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Left', 2.5, 4),
+ ('Rest', 4, 0),
+ ('Right', 2.5, 3),
+ ('Open', 2.5, 2),
+ ('Rest', 4, 0),
+ ('Close', 2.5, 1),
+ ('Left', 2.5, 4),
+ ('Right', 2.5, 3),
+ ('Close', 2.5, 1),
+ ('Rest', 4, 0),
+ ('Rest', 4, 0),
+]
+
 
 def record_video(duration, filename):
     cap = cv2.VideoCapture(0)
@@ -86,9 +199,9 @@ def record_data_and_protocol(duration, csv_filename, protocol):
             count = 1
             session_id = os.path.basename(csv_filename).split('.')[0]
             strat_time = time.time()
-            for action, action_duration, label in protocol:
-                # Print the action at the start of the section
-                print(f"\n{action}")
+            for idx, (action, action_duration, label) in enumerate(protocol):
+                next_action = protocol[idx + 1][0] if idx + 1 < len(protocol) else 'END'
+                print(f"\n{action}           next is         {next_action}")
                 action_start_time = time.time()
                 action_time = 0  # Track time for the action
                 elapsed = 0  # Track elapsed seconds for printing once per second
@@ -128,18 +241,36 @@ def record_data_and_protocol(duration, csv_filename, protocol):
             board_shim.release_session()
 
 if __name__ == '__main__':
-    # Get person name
-    person_name = input("Enter the name of the recorded person: ")
+        # Get person name
+    # Use your existing protocol variables
+    PROTOCOLS = [PROTOCOL1, PROTOCOL2, PROTOCOL3, PROTOCOL4, PROTOCOL5]
 
-    # File paths
+    # Inputs
+    person_name = input("Enter the name of the recorded person: ").strip()
+    n_raw = input("Enter number of protocol (1-5): ").strip()
+
+    # Choose protocol (clamp to 1..5)
+    try:
+        n = int(n_raw)
+    except ValueError:
+        n = 1
+    n = 1 if n < 1 else 5 if n > 5 else n
+    PROTOCOL = PROTOCOLS[n - 1]
+
+    # Paths
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    directory = os.path.join('../Patient_Records', person_name)
+    directory = os.path.join(".", "Patient_Records", person_name or "Unknown")
     os.makedirs(directory, exist_ok=True)
     csv_filename = os.path.join(directory, f"{person_name}_{timestamp}.csv")
     video_filename = os.path.join(directory, f"{person_name}_{timestamp}.avi")
 
-    # Calculate total recording time
-    total_duration = sum([duration for _, duration, _ in PROTOCOL])
+    # Total time
+    total_duration = sum(duration for _, duration, _ in PROTOCOL)
+
+    # (optional) quick summary
+    print(f"Protocol #{n} selected. Steps: {len(PROTOCOL)}, Total: {total_duration}s")
+    print("CSV:", csv_filename)
+    print("Video:", video_filename)
 
     # Create an event for synchronization
     start_event = threading.Event()

@@ -10,6 +10,36 @@ presets = [prt.PRESET0_UUID, prt.PRESET1_UUID, prt.PRESET2_UUID, prt.PRESET3_UUI
 commands1 = prt.commands
 
 import protocol as prt
+
+# --- add this block ---
+import os, time, subprocess
+
+HERE = os.path.dirname(__file__)
+LOG_DIR = os.path.join(HERE, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, f"commands_{int(time.time())}.log")
+
+def log(msg: str):
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")
+    line = f"[{ts}] {msg}"
+    print(line, flush=True)               # to screen
+    try:
+        with open(LOG_FILE, "a") as f:    # to file
+            f.write(line + "\n")
+    except Exception:
+        pass
+
+def notify(msg: str):
+    # If you run a desktop session on the Pi, this shows a small pop-up.
+    # If notify-send isn't available or no GUI, this will just do nothing.
+    try:
+        subprocess.run(["notify-send", "Prosthetic", msg], check=False)
+    except Exception:
+        pass
+# --- end block ---
+
+
+
 def commands_PI(shared_data):
     async def run():
         try:
@@ -23,20 +53,26 @@ def commands_PI(shared_data):
                         shared_data['action'] = 0
 
                         if shared_data['move'] == 'up' or shared_data['move'] == 'open':
+                   # OPEN
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["open"]))
-                            print("Sending OPEN command")
+                            log("COMMAND SENT: OPEN")
+                            notify("OPEN")
 
-                        elif shared_data['move'] == 'down' or shared_data['move'] == 'close':
+                    # CLOSE
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["close"]))
-                            print("Sending CLOSE command")
+                            log("COMMAND SENT: CLOSE")
+                            notify("CLOSE")
 
-                        elif shared_data['move'] == 'left':
+# LEFT
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["left"]))
-                            print("Sending LEFT command")
+                            log("COMMAND SENT: LEFT")
+                            notify("LEFT")
 
-                        elif shared_data['move'] == 'right':
+# RIGHT
                             await client.write_gatt_char(prt.DIRECT_UUID, bytes(commands1["right"]))
-                            print("Sending RIGHT command")
+                            log("COMMAND SENT: RIGHT")
+                            notify("RIGHT")
+
 
                         # in the comments are trigger commands if we want to use them
                         #elif shared_data['move'].isdigit():

@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "./data analysis"
-    ]
+    ],
+    "python-envs.pythonProjects": []
 }

@@ -7,12 +7,12 @@ from feature_extraction_PI import extract_features
 import time
 from multiprocessing import Manager
 
-model_path = r"C:\Technion\Project_A\Project_A\models\liad_personal_model.pkl"
+model_path = r"/home/raspi5/mindrove-emg-classifier/SVM_models/svm_model_guy.pkl"
 
 svm_model = joblib.load(model_path)
 check_every = 20 #number of samples
-gyro_threshold = 1500 # used for decide if we are in rest mode or no
-move_min_size = 40 # in samples
+gyro_threshold = 100 # used for decide if we are in rest mode or no
+move_min_size = 40  # in samples
 def handeling_nans(array):
     array = np.nan_to_num(array, nan=0)
     return array
@@ -46,6 +46,13 @@ def real_time_classify_per_move_PI(shared_data):
                 # Prepare session
                 board_shim.prepare_session()
                 board_shim.start_stream()
+
+                emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
+                gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
+                sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
+                print(f"[dbg] emg={emg_channels} gyro={gyro_channels} fs={sampling_rate}")
+
+
                 emg_channels = BoardShim.get_emg_channels(board_shim.board_id)
                 gyro_channels = BoardShim.get_gyro_channels(board_shim.board_id)
                 sampling_rate = BoardShim.get_sampling_rate(board_shim.board_id)
@@ -54,8 +61,8 @@ def real_time_classify_per_move_PI(shared_data):
                 flag_move = 0 # used for symbol whether we are in the middle of movement or not
                 print("start classifying")
                 while True:
-                    if board_shim.get_board_data_count() >= check_every: #check the new data every period of samples that we chose
-                        new_data = board_shim.get_board_data()
+                    if board_shim.get_board_data_count() >= check_every: ## NOT HAPPENING WITH CHECK EVERY #check the new data every period of samples that we chose
+                        new_data = board_shim.get_board_data()# get only the newest N samples
                         emg_data = np.array(new_data[emg_channels])
                         gyro_data = np.array(new_data[gyro_channels])
 
@@ -65,26 +72,32 @@ def real_time_classify_per_move_PI(shared_data):
                                 flag_move = 1
                         elif flag_move == 1:# if the gyro values is lower than the threshold we chose, if it is the end of a movement we will check the classify of this movement
                             movement = movement_from_model(move_data, sampling_rate)
+                            if movement == 0:
+                                shared_data['move'] = 'rest'
+                                print('rest')
                             if movement == 1:
-                                shared_data['move'] = 'open'
-                            elif movement == 2:
                                 shared_data['move'] = 'close'
+                                print('close')
+                            elif movement == 2:
+                                shared_data['move'] = 'open'
+                                print('open')
                             elif movement == 3:
                                 shared_data['move'] = 'right'
+                                print('right')
                             elif movement == 4:
                                 shared_data['move'] = 'left'
+                                print('left')
                             if move_data.shape[1] > move_min_size:
                                 print("the move is ", movement)
                                 shared_data['action'] = 1
                             move_data = np.empty((8, 0))
                             flag_move = 0
-
-
             except Exception as e:
                 print(f"Error: {e}")
             finally:
                 if board_shim.is_prepared():
                     board_shim.release_session()
+
 
 if __name__ == "__main__":
     with Manager() as manager:
